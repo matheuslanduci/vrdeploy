@@ -46,7 +46,8 @@ afterEach(async () => {
     'session',
     'verification',
     'loja',
-    'rede'
+    'rede',
+    'pdv'
   ]
 
   for (const table of tables) {

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1757758550621,
-      "tag": "0000_create_auth_tables",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1757761631746,
-      "tag": "0001_create_rede_table",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1757767278679,
-      "tag": "0002_create_loja_table",
+      "when": 1757768453680,
+      "tag": "0000_initial_tables",
       "breakpoints": true
     }
   ]

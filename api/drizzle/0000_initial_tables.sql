@@ -14,6 +14,35 @@ CREATE TABLE "account" (
 	"updated_at" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "loja" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"id_rede" bigint NOT NULL,
+	"nome" varchar NOT NULL,
+	"ativo" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "pdv" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"id_loja" bigint NOT NULL,
+	"nome" varchar NOT NULL,
+	"ativo" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "rede" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"nome" varchar NOT NULL,
+	"ativo" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"expires_at" timestamp NOT NULL,
@@ -50,3 +79,6 @@ CREATE TABLE "verification" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
+--> statement-breakpoint
+CREATE INDEX "loja_id_rede_idx" ON "loja" USING btree ("id_rede");--> statement-breakpoint
+CREATE INDEX "pdv_id_loja_idx" ON "pdv" USING btree ("id_loja");
