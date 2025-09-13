@@ -45,6 +45,7 @@ afterEach(async () => {
     'account',
     'session',
     'verification',
+    'loja',
     'rede'
   ]
 
