@@ -1,0 +1,74 @@
+import { APIError, betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { createAuthMiddleware } from 'better-auth/api'
+import { admin as adminPlugin, defaultStatements } from 'better-auth/plugins'
+import { createAccessControl } from 'better-auth/plugins/access'
+import { userAc } from 'better-auth/plugins/admin/access'
+import { db } from './database'
+
+const permissions = {
+  ...defaultStatements,
+  rede: ['read', 'create', 'update', 'delete'],
+  loja: ['read', 'create', 'update', 'delete'],
+  pdv: ['read', 'create', 'update', 'delete'],
+  agente: ['read', 'create', 'update', 'delete'],
+  user: ['read', 'create', 'update', 'delete']
+} as const
+
+const ac = createAccessControl(permissions)
+
+const user = ac.newRole({
+  ...userAc.statements,
+  rede: ['read'],
+  loja: ['read'],
+  pdv: ['read'],
+  agente: ['read'],
+  user: ['read'],
+  organization: [],
+  member: [],
+  invitation: [],
+  team: [],
+  ac: []
+})
+
+const admin = ac.newRole({
+  ...userAc.statements,
+  rede: ['read', 'create', 'update', 'delete'],
+  loja: ['read', 'create', 'update', 'delete'],
+  pdv: ['read', 'create', 'update', 'delete'],
+  agente: ['read', 'create', 'update', 'delete'],
+  user: ['read', 'create', 'update', 'delete'],
+  organization: [],
+  member: [],
+  invitation: [],
+  team: [],
+  ac: []
+})
+
+export const auth = betterAuth({
+  plugins: [
+    adminPlugin({
+      ac,
+      roles: { user, admin }
+    })
+  ],
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: false,
+    disableSignUp: true
+  },
+  database: drizzleAdapter(db, {
+    provider: 'pg'
+  }),
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === '/sign-in/email') return
+
+      if (!ctx.body?.email.endsWith('@vrsoft.com.br')) {
+        throw new APIError('BAD_REQUEST', {
+          message: 'Você não tem permissão para acessar esta aplicação'
+        })
+      }
+    })
+  }
+})

@@ -1,7 +1,11 @@
+import 'dotenv/config'
 import z from 'zod'
 
 const envSchema = z.object({
   DATABASE_URL: z.string(),
+
+  BETTER_AUTH_SECRET: z.string(),
+  BETTER_AUTH_URL: z.string(),
 
   S3_ACCESS_KEY: z.string(),
   S3_SECRET_KEY: z.string(),
