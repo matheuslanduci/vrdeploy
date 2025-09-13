@@ -4,7 +4,12 @@ import { createAuthMiddleware } from 'better-auth/api'
 import { admin as adminPlugin, defaultStatements } from 'better-auth/plugins'
 import { createAccessControl } from 'better-auth/plugins/access'
 import { userAc } from 'better-auth/plugins/admin/access'
+import { createMiddleware } from 'hono/factory'
+import { accountTable } from './account/account.sql'
 import { db } from './database'
+import { sessionTable } from './session/session.sql'
+import { userTable } from './user/user.sql'
+import { verificationTable } from './verification/verification.sql'
 
 const permissions = {
   ...defaultStatements,
@@ -58,17 +63,46 @@ export const auth = betterAuth({
     disableSignUp: true
   },
   database: drizzleAdapter(db, {
-    provider: 'pg'
+    provider: 'pg',
+    schema: {
+      user: userTable,
+      account: accountTable,
+      session: sessionTable,
+      verification: verificationTable
+    }
   }),
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === '/sign-in/email') return
+      if (ctx.path !== '/sign-in/email') return
 
       if (!ctx.body?.email.endsWith('@vrsoft.com.br')) {
         throw new APIError('BAD_REQUEST', {
+          code: 'Forbidden',
           message: 'Você não tem permissão para acessar esta aplicação'
         })
       }
     })
   }
 })
+
+export function requireAuth() {
+  return createMiddleware<AuthVariables>(async (c, next) => {
+    const session = await auth.api.getSession({
+      headers: c.req.raw.headers
+    })
+
+    if (!session) return c.text('Unauthorized', 401)
+
+    c.set('user', session.user)
+    c.set('session', session.session)
+
+    return next()
+  })
+}
+
+type AuthVariables = {
+  Variables: {
+    user: typeof auth.$Infer.Session.user
+    session: typeof auth.$Infer.Session.session
+  }
+}
