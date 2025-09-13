@@ -2,7 +2,9 @@
   "name": "vrdeploy",
   "description": "Ferramenta de deploy automático em máquinas remotas",
   "workspaces": [
-    "api"
+    "api",
+    "ui",
+    "shared"
   ],
   "scripts": {
     "prettier": "prettier --write '**/*.{ts,js,json,md}'"
