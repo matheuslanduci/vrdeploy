@@ -1,0 +1,13 @@
+{
+  "name": "vrdeploy",
+  "description": "Ferramenta de deploy automático em máquinas remotas",
+  "workspaces": [
+    "api"
+  ],
+  "scripts": {
+    "prettier": "prettier --write '**/*.{ts,js,json,md}'"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}

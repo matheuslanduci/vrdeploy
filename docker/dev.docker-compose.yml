@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: vrdeploy
+      POSTGRES_PASSWORD: vrdeploy
+      POSTGRES_DB: vrdeploy
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+
+  minio:
+    image: quay.io/minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    command: server /data --console-address ":9001"
+    ports:
+      - '9000:9000' # S3 API
+      - '9001:9001' # Web console
+    restart: unless-stopped
