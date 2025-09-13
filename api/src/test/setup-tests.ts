@@ -1,6 +1,6 @@
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
-import { auth } from './auth'
-import { db } from './database'
+import { auth } from '../auth'
+import { db } from '../database'
 
 beforeEach(async () => {
   await migrate(db, {
@@ -15,7 +15,8 @@ afterEach(async () => {
     'user',
     'account',
     'session',
-    'verification'
+    'verification',
+    'rede'
   ]
 
   for (const table of tables) {

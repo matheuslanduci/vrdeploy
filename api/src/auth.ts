@@ -16,7 +16,7 @@ const permissions = {
   rede: ['read', 'create', 'update', 'delete'],
   loja: ['read', 'create', 'update', 'delete'],
   pdv: ['read', 'create', 'update', 'delete'],
-  agente: ['read', 'create', 'update', 'delete'],
+  agente: ['read', 'approve', 'disconnect'],
   user: ['read', 'create', 'update', 'delete']
 } as const
 
@@ -41,7 +41,7 @@ const admin = ac.newRole({
   rede: ['read', 'create', 'update', 'delete'],
   loja: ['read', 'create', 'update', 'delete'],
   pdv: ['read', 'create', 'update', 'delete'],
-  agente: ['read', 'create', 'update', 'delete'],
+  agente: ['read', 'approve', 'disconnect'],
   user: ['read', 'create', 'update', 'delete'],
   organization: [],
   member: [],
@@ -95,6 +95,26 @@ export function requireAuth() {
 
     c.set('user', session.user)
     c.set('session', session.session)
+
+    return next()
+  })
+}
+
+export function requirePermission<T extends keyof typeof permissions>(
+  resource: T,
+  ...actions: (typeof permissions)[T][number][]
+) {
+  return createMiddleware<AuthVariables>(async (c, next) => {
+    const data = await auth.api.userHasPermission({
+      body: {
+        userId: c.get('user').id,
+        permission: {
+          [resource]: actions
+        }
+      }
+    })
+
+    if (!data.success) return c.text('Forbidden', 403)
 
     return next()
   })
