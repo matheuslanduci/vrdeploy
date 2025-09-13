@@ -25,6 +25,8 @@ describe('GET /rede', () => {
   })
 
   it('should return 200 and an array of redes', async () => {
+    const { headers } = await setupTest()
+
     const [rede] = await db
       .insert(redeTable)
       .values({
@@ -32,7 +34,6 @@ describe('GET /rede', () => {
       })
       .returning()
       .execute()
-    const { headers } = await setupTest()
 
     const response = await redeRouter.request('/rede', {
       method: 'GET',
@@ -51,8 +52,8 @@ describe('GET /rede', () => {
       meta: {
         page: 1,
         pageSize: 10,
-        total: 0,
-        totalPages: 0
+        total: 1,
+        totalPages: 1
       }
     })
   })

@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import z from 'zod'
 import { requireAuth } from '~/auth'
 import { db } from '~/database'
+import { assert } from '~/util/assert'
 import { redeTable } from './rede.sql'
 
 export const redeRouter = new Hono().use(requireAuth()).get(
@@ -34,13 +35,15 @@ export const redeRouter = new Hono().use(requireAuth()).get(
       .where(isNull(redeTable.deletedAt))
       .execute()
 
+    assert(total?.count !== undefined, 'Total count query failed')
+
     return c.json({
       data: redes,
       meta: {
         page,
         pageSize,
-        total: Number(total?.count ?? 0),
-        totalPages: Math.ceil(Number(total?.count ?? 0) / pageSize)
+        total: total.count,
+        totalPages: Math.ceil(total.count / pageSize)
       }
     })
   }

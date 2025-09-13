@@ -10,9 +10,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     setupFiles: ['./src/setup-tests.ts'],
-    maxWorkers: 1,
     coverage: {
-      enabled: true
+      enabled: true,
+      include: ['src/**/*.router.ts', 'src/auth.ts']
     }
   }
 })

@@ -61,15 +61,14 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false,
     disableSignUp: true,
-    ...(process.env.NODE_ENV === 'test'
-      ? {
-          password: {
-            hash: (password: string) => Promise.resolve(password),
-            verify: ({ password, hash }: { password: string; hash: string }) =>
-              Promise.resolve(password === hash)
-          }
-        }
-      : {})
+    // In tests, the passwords take too long to be hashed
+    ...(process.env.NODE_ENV === 'test' && {
+      password: {
+        hash: (password: string) => Promise.resolve(password),
+        verify: ({ password, hash }: { password: string; hash: string }) =>
+          Promise.resolve(password === hash)
+      }
+    })
   },
   database: drizzleAdapter(db, {
     provider: 'pg',
