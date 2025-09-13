@@ -57,7 +57,12 @@ describe('GET /loja', () => {
         {
           ...loja!,
           createdAt: new Date(loja!.createdAt).toISOString(),
-          updatedAt: new Date(loja!.updatedAt).toISOString()
+          updatedAt: new Date(loja!.updatedAt).toISOString(),
+          rede: {
+            ...rede!,
+            createdAt: new Date(rede!.createdAt).toISOString(),
+            updatedAt: new Date(rede!.updatedAt).toISOString()
+          }
         }
       ],
       meta: {
@@ -103,7 +108,15 @@ describe('GET /loja', () => {
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
           ativo: true,
-          deletedAt: null
+          deletedAt: null,
+          rede: {
+            id: rede!.id,
+            nome: 'Rede Teste',
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            ativo: true,
+            deletedAt: null
+          }
         }
       ],
       meta: {
@@ -157,7 +170,15 @@ describe('GET /loja', () => {
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
           ativo: true,
-          deletedAt: null
+          deletedAt: null,
+          rede: {
+            id: rede1!.id,
+            nome: 'Rede 1',
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            ativo: true,
+            deletedAt: null
+          }
         }
       ],
       meta: {
@@ -201,7 +222,15 @@ describe('GET /loja', () => {
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
         ativo: true,
-        deletedAt: null
+        deletedAt: null,
+        rede: {
+          id: rede!.id,
+          nome: 'Rede Teste',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          ativo: true,
+          deletedAt: null
+        }
       })),
       meta: {
         page: 2,

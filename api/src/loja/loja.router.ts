@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
-import { and, asc, count, eq, isNull } from 'drizzle-orm'
+import { and, asc, count, eq, getTableColumns, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 import z from 'zod'
 import { requireAuth, requirePermission } from '~/auth'
@@ -30,8 +30,12 @@ export const lojaRouter = new Hono()
       )
 
       const lojas = await db
-        .select()
+        .select({
+          ...getTableColumns(lojaTable),
+          rede: getTableColumns(redeTable)
+        })
         .from(lojaTable)
+        .leftJoin(redeTable, eq(lojaTable.idRede, redeTable.id))
         .where(whereConditions)
         .orderBy(asc(lojaTable.id))
         .limit(pageSize)
