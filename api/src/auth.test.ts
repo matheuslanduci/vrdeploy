@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { auth, requireAuth, requirePermission } from './auth'
-import { setupTest } from './test/setup-tests'
+import { setupTest } from './test-utils'
 
 describe('requireAuth()', () => {
   const app = new Hono().use(requireAuth()).get('/protected', (c) => {

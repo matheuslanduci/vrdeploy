@@ -9,7 +9,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    setupFiles: ['./src/test/preload-env.ts', './src/test/setup-tests.ts'],
+    setupFiles: ['./src/setup-tests.ts'],
+    maxWorkers: 1,
     coverage: {
       enabled: true
     }

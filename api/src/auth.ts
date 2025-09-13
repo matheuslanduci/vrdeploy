@@ -60,7 +60,16 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
-    disableSignUp: true
+    disableSignUp: true,
+    ...(process.env.NODE_ENV === 'test'
+      ? {
+          password: {
+            hash: (password: string) => Promise.resolve(password),
+            verify: ({ password, hash }: { password: string; hash: string }) =>
+              Promise.resolve(password === hash)
+          }
+        }
+      : {})
   },
   database: drizzleAdapter(db, {
     provider: 'pg',

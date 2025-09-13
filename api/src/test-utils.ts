@@ -1,28 +1,4 @@
-import { migrate } from 'drizzle-orm/node-postgres/migrator'
-import { auth } from '../auth'
-import { db } from '../database'
-
-beforeEach(async () => {
-  await migrate(db, {
-    migrationsFolder: './drizzle',
-    migrationsSchema: 'public'
-  })
-})
-
-afterEach(async () => {
-  const tables = [
-    '__drizzle_migrations',
-    'user',
-    'account',
-    'session',
-    'verification',
-    'rede'
-  ]
-
-  for (const table of tables) {
-    await db.execute(`drop table if exists "${table}"`)
-  }
-})
+import { auth } from './auth'
 
 export async function setupTest(role: 'user' | 'admin' = 'admin') {
   const { user } = await auth.api.createUser({
