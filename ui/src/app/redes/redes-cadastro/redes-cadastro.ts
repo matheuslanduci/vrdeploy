@@ -27,7 +27,7 @@ import { Rede } from '../redes-consulta/redes-consulta'
 })
 export class RedesCadastro implements OnInit {
   @Input() isEdit = false
-  @Input() redeId: string | null = null
+  @Input() idRede: string | null = null
   loading = false
 
   formGroup = new FormGroup({
@@ -41,8 +41,8 @@ export class RedesCadastro implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.isEdit && this.redeId) {
-      this.loadRedeData(this.redeId)
+    if (this.isEdit && this.idRede) {
+      this.loadRedeData(this.idRede)
     }
   }
 
@@ -77,7 +77,7 @@ export class RedesCadastro implements OnInit {
   }
 
   submitEdicao(): void {
-    if (this.formGroup.invalid || !this.redeId) {
+    if (this.formGroup.invalid || !this.idRede) {
       this.notification.error(
         'Erro',
         'Por favor, preencha o formulário corretamente.'
@@ -88,7 +88,7 @@ export class RedesCadastro implements OnInit {
     this.loading = true
 
     this.httpClient
-      .put(`${environment.apiURL}/rede/${this.redeId}`, this.formGroup.value, {
+      .put(`${environment.apiURL}/rede/${this.idRede}`, this.formGroup.value, {
         withCredentials: true
       })
       .subscribe({

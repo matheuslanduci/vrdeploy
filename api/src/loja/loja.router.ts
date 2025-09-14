@@ -37,7 +37,7 @@ lojaRouter.get(
         rede: getTableColumns(redeTable)
       })
       .from(lojaTable)
-      .leftJoin(redeTable, eq(lojaTable.idRede, redeTable.id))
+      .innerJoin(redeTable, eq(lojaTable.idRede, redeTable.id))
       .where(whereConditions)
       .orderBy(asc(lojaTable.id))
       .limit(pageSize)

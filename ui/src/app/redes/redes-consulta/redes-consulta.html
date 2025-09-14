@@ -10,7 +10,7 @@
   <nz-table #table [nzData]="redes" nzNoResult="Nenhuma rede encontrada" [nzPageSize]="pageSize"
     [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
     (nzPageIndexChange)="fetchData()" [nzPageSizeOptions]="[5, 10, 20]"
-    (nzPageSizeChange)="pageSize = $event; fetchData()" [nzShowSizeChanger]="true">
+    (nzPageSizeChange)="pageSize = $event; fetchData()" [nzShowSizeChanger]="true" [nzLoading]="loading">
     <thead>
       <tr>
         <th style="width: 200px;">Código</th>

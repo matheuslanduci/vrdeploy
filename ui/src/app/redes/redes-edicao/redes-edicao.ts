@@ -9,11 +9,11 @@ import { RedesCadastro } from '../redes-cadastro/redes-cadastro'
   styleUrl: './redes-edicao.css'
 })
 export class RedesEdicao {
-  redeId: string | null = null
+  idRede: string | null = null
 
   constructor(private route: ActivatedRoute) {
     this.route.params.subscribe((params) => {
-      this.redeId = params['id']
+      this.idRede = params['id']
     })
   }
 }

@@ -38,9 +38,10 @@ export class RedesConsulta {
 
   fetchData(): void {
     this.loading = true
+
     this.httpClient
       .get<{
-        total: number
+        meta: { total: number }
         data: Rede[]
       }>(
         `${environment.apiURL}/rede?page=${this.page}&pageSize=${this.pageSize}`,
@@ -50,7 +51,7 @@ export class RedesConsulta {
       )
       .subscribe({
         next: (response) => {
-          this.total = response.total
+          this.total = response.meta.total
           this.redes = response.data
         },
         error: () => {

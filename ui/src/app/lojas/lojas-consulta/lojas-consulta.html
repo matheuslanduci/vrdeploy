@@ -1,0 +1,65 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Lojas</h1>
+    <button nz-button nzType="primary" routerLink="/lojas/cadastro">
+      <nz-icon nzType="plus" />
+      <span>Nova Loja</span>
+    </button>
+  </div>
+
+  <nz-card nzTitle="Filtros">
+    <div nz-row nzGutter="16">
+      <div nz-col nzSpan="8">
+        <div class="flex flex-col gap-1">
+          <label for="rede">Rede</label>
+          <nz-select nzPlaceHolder="Selecione uma rede" [(ngModel)]="filtro.idRede" nzAllowClear
+            (nzScrollToBottom)="loadNextRedes()" (ngModelChange)="loadData()" [nzLoading]="loadingRedes" nzShowSearch
+            nzOptionHeight="32">
+            @for (rede of redes; track rede.id) {
+            <nz-option [nzValue]="rede.id" [nzLabel]="rede.nome" />
+            }
+          </nz-select>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+
+  <nz-table #table [nzData]="lojas" nzNoResult="Nenhuma loja encontrada" [nzPageSize]="pageSize"
+    [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
+    (nzPageIndexChange)="loadData()" [nzPageSizeOptions]="[5, 10, 20]"
+    (nzPageSizeChange)="pageSize = $event; loadData()" [nzShowSizeChanger]="true" [nzLoading]="loading">
+    <thead>
+      <tr>
+        <th style="width: 200px;">Código</th>
+        <th>Nome</th>
+        <th>Rede</th>
+        <th style="width: 200px">
+          Ações
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (loja of table.data; track loja.id) {
+      <tr>
+        <td>{{ loja.id }}</td>
+        <td>{{ loja.nome }}</td>
+        <td>{{ loja.rede.nome }}</td>
+        <td>
+          <div class="flex items-center gap-2">
+            <a nz-button nzType="link" [routerLink]="['/lojas/edicao', loja.id]">
+              <nz-icon nzType="edit" />
+            </a>
+
+            <a nz-button nzType="link" nzPopconfirmTitle="Tem certeza que deseja excluir esta loja?" nzOkText="Sim"
+              nzCancelText="Não" nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click" nz-popconfirm
+              (nzOnConfirm)="deleteLoja(loja.id)">
+              <nz-icon nzType="delete" />
+            </a>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </nz-table>
+</div>

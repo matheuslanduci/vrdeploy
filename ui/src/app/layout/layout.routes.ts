@@ -23,5 +23,24 @@ export const layoutRoutes: Routes = [
     path: 'redes/edicao/:id',
     loadComponent: () =>
       import('../redes/redes-edicao/redes-edicao').then((m) => m.RedesEdicao)
+  },
+  {
+    path: 'lojas',
+    loadComponent: () =>
+      import('../lojas/lojas-consulta/lojas-consulta').then(
+        (m) => m.LojasConsulta
+      )
+  },
+  {
+    path: 'lojas/cadastro',
+    loadComponent: () =>
+      import('../lojas/lojas-cadastro/lojas-cadastro').then(
+        (m) => m.LojasCadastro
+      )
+  },
+  {
+    path: 'lojas/edicao/:id',
+    loadComponent: () =>
+      import('../lojas/lojas-edicao/lojas-edicao').then((m) => m.LojasEdicao)
   }
 ]
