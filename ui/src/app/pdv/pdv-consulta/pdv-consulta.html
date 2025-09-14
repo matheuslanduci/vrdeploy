@@ -1,0 +1,79 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">PDVs</h1>
+    <button nz-button nzType="primary" routerLink="/pdvs/cadastro">
+      <nz-icon nzType="plus" />
+      <span>Novo PDV</span>
+    </button>
+  </div>
+
+  <nz-card nzTitle="Filtros">
+    <div nz-row nzGutter="16">
+      <div nz-col nzSpan="8">
+        <div class="flex flex-col gap-1">
+          <label for="rede">Rede</label>
+          <nz-select nzPlaceHolder="Selecione uma rede" [(ngModel)]="filtro.idRede" nzAllowClear
+            (nzScrollToBottom)="loadNextRedes()" (ngModelChange)="loadData(true)" [nzLoading]="loadingRedes"
+            nzShowSearch nzOptionHeight="32">
+            @for (rede of redes; track rede.id) {
+            <nz-option [nzValue]="rede.id" [nzLabel]="rede.nome" />
+            }
+          </nz-select>
+        </div>
+      </div>
+      <div nz-col nzSpan="8">
+        <div class="flex flex-col gap-1">
+          <label for="loja">Loja</label>
+          <nz-select nzPlaceHolder="Selecione uma loja" [(ngModel)]="filtro.idLoja" nzAllowClear
+            (nzScrollToBottom)="loadNextLojas()" (ngModelChange)="loadData(true)" [nzLoading]="loadingLojas"
+            nzShowSearch nzOptionHeight="32">
+            @for (loja of lojas; track loja.id) {
+            <nz-option [nzValue]="loja.id" [nzLabel]="loja.nome" />
+            }
+          </nz-select>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+
+  <nz-table #table [nzData]="pdvs" nzNoResult="Nenhum PDV encontrado" [nzPageSize]="pageSize"
+    [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
+    (nzPageIndexChange)="loadPdvs()" [nzPageSizeOptions]="[5, 10, 20]"
+    (nzPageSizeChange)="pageSize = $event; loadPdvs()" [nzShowSizeChanger]="true" [nzLoading]="loading">
+    <thead>
+      <tr>
+        <th style="width: 200px;">Código</th>
+        <th>Nome</th>
+        <th>Loja</th>
+        <th>Rede</th>
+        <th style="width: 200px">
+          Ações
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (pdv of table.data; track pdv.id) {
+      <tr>
+        <td>{{ pdv.id }}</td>
+        <td>{{ pdv.nome }}</td>
+        <td>{{ pdv.loja.nome }}</td>
+        <td>{{ pdv.rede.nome }}</td>
+        <td>
+          <div class="flex items-center gap-2">
+            <a nz-button nzType="link" [routerLink]="['/pdvs/edicao', pdv.id]">
+              <nz-icon nzType="edit" />
+            </a>
+
+            <a nz-button nzType="link" nzPopconfirmTitle="Tem certeza que deseja excluir este PDV?" nzOkText="Sim"
+              nzCancelText="Não" nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click" nz-popconfirm
+              (nzOnConfirm)="deletePdv(pdv.id)">
+              <nz-icon nzType="delete" />
+            </a>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </nz-table>
+</div>

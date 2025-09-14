@@ -1,0 +1,38 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <div class="text-2xl  flex items-center gap-2">
+      <a routerLink="/pdvs" class="hover:underline">PDVs</a>
+      <span>/</span>
+      <span>
+        {{ isEdit ? 'Editar' : 'Cadastro' }}
+      </span>
+    </div>
+    <button nz-button nzType="primary" [disabled]="formGroup.invalid" (click)="submit()" [nzLoading]="loading">
+      <nz-icon nzType="plus" />
+      <span>Salvar</span>
+    </button>
+  </div>
+
+  <nz-card [nzTitle]="isEdit ? 'Edição de PDV' : 'Cadastro de PDV'" class="w-full" [nzLoading]="loading">
+    <form [formGroup]="formGroup" nz-row [nzGutter]="16">
+      <div nz-col nzSpan="8">
+        <div class="w-full flex flex-col gap-1">
+          <label for="nome">Nome</label>
+          <input placeholder="Insira o nome do PDV aqui" nz-input id="nome" class="mb-4" formControlName="nome" />
+        </div>
+      </div>
+
+      <div nz-col nzSpan="8">
+        <div class="w-full flex flex-col gap-1">
+          <label for="loja">Loja</label>
+          <nz-select nzPlaceHolder="Selecione uma loja" formControlName="idLoja" nzAllowClear nzShowSearch
+            nzOptionHeight="32" [nzLoading]="loadingLojas" (nzScrollToBottom)="loadNextLojas()">
+            @for (loja of lojas; track loja.id) {
+            <nz-option [nzValue]="loja.id" [nzLabel]="loja.nome" />
+            }
+          </nz-select>
+        </div>
+      </div>
+    </form>
+  </nz-card>
+</div>

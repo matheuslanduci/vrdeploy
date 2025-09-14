@@ -42,5 +42,20 @@ export const layoutRoutes: Routes = [
     path: 'lojas/edicao/:id',
     loadComponent: () =>
       import('../lojas/lojas-edicao/lojas-edicao').then((m) => m.LojasEdicao)
+  },
+  {
+    path: 'pdvs',
+    loadComponent: () =>
+      import('../pdv/pdv-consulta/pdv-consulta').then((m) => m.PdvConsulta)
+  },
+  {
+    path: 'pdvs/cadastro',
+    loadComponent: () =>
+      import('../pdv/pdv-cadastro/pdv-cadastro').then((m) => m.PdvCadastro)
+  },
+  {
+    path: 'pdvs/edicao/:id',
+    loadComponent: () =>
+      import('../pdv/pdv-edicao/pdv-edicao').then((m) => m.PdvEdicao)
   }
 ]
