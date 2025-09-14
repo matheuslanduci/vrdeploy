@@ -1,0 +1,46 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Redes</h1>
+    <button nz-button nzType="primary" routerLink="/redes/cadastro">
+      <nz-icon nzType="plus" />
+      <span>Nova Rede</span>
+    </button>
+  </div>
+
+  <nz-table #table [nzData]="redes" nzNoResult="Nenhuma rede encontrada" [nzPageSize]="pageSize"
+    [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
+    (nzPageIndexChange)="fetchData()" [nzPageSizeOptions]="[5, 10, 20]"
+    (nzPageSizeChange)="pageSize = $event; fetchData()" [nzShowSizeChanger]="true">
+    <thead>
+      <tr>
+        <th style="width: 200px;">Código</th>
+        <th>Nome</th>
+        <th style="width: 200px">
+          Ações
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (rede of table.data; track rede) {
+      <tr>
+        <td>{{ rede.id }}</td>
+        <td>{{ rede.nome }}</td>
+        <td>
+          <div class="flex items-center gap-2">
+            <a nz-button nzType="link" [routerLink]="['/redes/edicao', rede.id]">
+              <nz-icon nzType="edit" />
+            </a>
+
+            <a nz-button nzType="link" nzPopconfirmTitle="Tem certeza que deseja excluir esta rede?" nzOkText="Sim"
+              nzCancelText="Não" nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click" nz-popconfirm
+              (nzOnConfirm)="deleteRede(rede.id)">
+              <nz-icon nzType="delete" />
+            </a>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </nz-table>
+</div>

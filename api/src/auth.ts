@@ -11,6 +11,7 @@ import { userTable } from './user/user.sql'
 import { verificationTable } from './verification/verification.sql'
 
 export const auth = betterAuth({
+  trustedOrigins: ['http://localhost:4200'],
   plugins: [
     adminPlugin({
       ac,

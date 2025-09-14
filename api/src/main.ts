@@ -9,10 +9,21 @@ import { pdvRouter } from './pdv/pdv.router'
 import { redeRouter } from './rede/rede.router'
 
 export const app = new Hono()
-app.use(cors())
+
+app.use(
+  cors({
+    origin: 'http://localhost:4200',
+    credentials: true,
+    allowHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+    exposeHeaders: ['X-CSRF-Token'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+  })
+)
 app.use(logger())
 
-app.on(['POST', 'GET'], '/api/auth/*', (c) => auth.handler(c.req.raw))
+app.on(['POST', 'GET', 'OPTIONS'], '/api/auth/*', (c) =>
+  auth.handler(c.req.raw)
+)
 
 app.route('/api', lojaRouter)
 app.route('/api', pdvRouter)

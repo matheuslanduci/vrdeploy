@@ -1,5 +1,7 @@
 @if (this.auth.isLoading()) {
-<nz-spin></nz-spin>
+<div class="w-screen min-h-svh flex justify-center items-center">
+  <nz-spin></nz-spin>
+</div>
 } @else {
 <router-outlet></router-outlet>
 }

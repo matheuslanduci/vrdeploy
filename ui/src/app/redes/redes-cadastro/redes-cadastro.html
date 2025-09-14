@@ -1,0 +1,26 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <div class="text-2xl  flex items-center gap-2">
+      <a routerLink="/redes" class="hover:underline">Redes</a>
+      <span>/</span>
+      <span>
+        {{ isEdit ? 'Editar' : 'Cadastro' }}
+      </span>
+    </div>
+    <button nz-button nzType="primary" [disabled]="formGroup.invalid" (click)="submit()" [nzLoading]="loading">
+      <nz-icon nzType="plus" />
+      <span>Salvar</span>
+    </button>
+  </div>
+
+  <nz-card [nzTitle]="isEdit ? 'Edição de Rede' : 'Cadastro de Rede'" class="w-full" [nzLoading]="loading">
+    <form [formGroup]="formGroup" nz-row [nzGutter]="16">
+      <div nz-col nzSpan="8">
+        <div class="w-full flex flex-col gap-1">
+          <label for="nome">Nome</label>
+          <input placeholder="Insira o nome da rede aqui" nz-input id="nome" class="mb-4" formControlName="nome" />
+        </div>
+      </div>
+    </form>
+  </nz-card>
+</div>

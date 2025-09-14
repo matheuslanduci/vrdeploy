@@ -1,28 +1,19 @@
-import { Injectable, OnInit, signal } from '@angular/core'
+import { Injectable, signal } from '@angular/core'
 import { from } from 'rxjs'
-import { auth } from '../../auth'
+import { authClient } from '../../auth'
 
 @Injectable({
   providedIn: 'root'
 })
-export class Auth implements OnInit {
+export class Auth {
   user = signal<User | null>(null)
   isLoading = signal(true)
 
-  ngOnInit(): void {
-    this.fetchUser()
-  }
-
   fetchUser() {
     this.isLoading.set(true)
-    from(auth.getSession()).subscribe({
+    from(authClient.getSession()).subscribe({
       next: ({ data, error }) => {
-        if (error) {
-          console.error('Error fetching session:', error)
-          this.user.set(null)
-
-          return
-        }
+        if (error) throw error
 
         this.user.set(data?.user ?? null)
       },
@@ -35,4 +26,4 @@ export class Auth implements OnInit {
   }
 }
 
-type User = typeof auth.$Infer.Session.user
+type User = typeof authClient.$Infer.Session.user

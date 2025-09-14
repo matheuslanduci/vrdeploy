@@ -8,6 +8,7 @@ import { assert } from '~/util/assert'
 import { redeTable } from './rede.sql'
 
 export const redeRouter = new Hono()
+
 redeRouter.use(requireAuth())
 
 redeRouter.get(

@@ -1,0 +1,42 @@
+<nz-layout>
+  <nz-sider nzWidth="280" class="w-[280px]">
+    <div class="p-4 flex items-center justify-center">
+      <img src="logo.png" class="w-12" />
+    </div>
+
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      <a nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{ exact: true }"
+        routerLink="/">
+        <nz-icon nzType="layout" />
+        <span>Dashboard</span>
+      </a>
+
+      <li nz-submenu routerLinkActive="ant-menu-item-selected" nzTitle="PDVs" nzIcon="apartment">
+        <ul>
+          <a nz-menu-item routerLinkActive="ant-menu-item-selected" routerLink="/redes">
+            <span>Redes</span>
+          </a>
+          <a nz-menu-item routerLinkActive="ant-menu-item-selected" routerLink="/lojas">
+            <span>Lojas</span>
+          </a>
+          <a nz-menu-item routerLinkActive="ant-menu-item-selected" routerLink="/pdvs">
+            <span>PDVs</span>
+          </a>
+        </ul>
+      </li>
+
+      <a nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{ exact: true }"
+        routerLink="/usuarios">
+        <nz-icon nzType="user" />
+        <span>Usuários</span>
+      </a>
+
+    </ul>
+  </nz-sider>
+
+  <nz-layout>
+    <nz-content class="p-4 min-h-screen">
+      <router-outlet></router-outlet>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

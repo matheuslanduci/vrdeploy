@@ -7,5 +7,6 @@ export default defineConfig({
       'postgresql://vrdeploy:vrdeploy@localhost:5432/vrdeploy'
   },
   dialect: 'postgresql',
-  schema: './src/**/*.sql.ts'
+  schema: './src/**/*.sql.ts',
+  verbose: true
 })
