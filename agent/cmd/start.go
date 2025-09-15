@@ -51,11 +51,29 @@ var startCmd = &cobra.Command{
 			ptyManager.HandleInput(),
 		)
 
-		err := ps.Connect()
+		tries := 0
 
-		if err != nil {
-			fmt.Println("Erro ao conectar ao serviço de pubsub:", err)
-			return
+		for {
+			err := ps.Connect()
+
+			if err != nil {
+				fmt.Println("Erro ao conectar ao serviço de pubsub:", err)
+				return
+			}
+
+			if err == nil {
+				// A conexão foi bem-sucedida mas ocorreu algo inesperado (ex: falha do servidor)
+				tries = 0
+			}
+
+			tries++
+
+			if tries >= 5 {
+				fmt.Println("Não foi possível conectar ao serviço de pubsub após várias tentativas:", err)
+				return
+			}
+
+			time.Sleep(5 * time.Second)
 		}
 	},
 }
