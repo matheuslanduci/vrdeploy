@@ -47,8 +47,8 @@
 
   <nz-table #table [nzData]="agentes" nzNoResult="Nenhum agente encontrado" [nzPageSize]="pageSize"
     [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
-    (nzPageIndexChange)="loadPdvs()" [nzPageSizeOptions]="[5, 10, 20]"
-    (nzPageSizeChange)="pageSize = $event; loadPdvs()" [nzShowSizeChanger]="true" [nzLoading]="loading">
+    (nzPageIndexChange)="loadAgentes()" [nzPageSizeOptions]="[5, 10, 20]"
+    (nzPageSizeChange)="pageSize = $event; loadAgentes()" [nzShowSizeChanger]="true" [nzLoading]="loading">
 
     <thead>
       <tr>
@@ -81,7 +81,7 @@
           <nz-tag nzColor="orange">Pendente</nz-tag>
           }
           @else if (agente.situacao == 'rejeitado') {
-          <nz-tag nzColor="red">Rejeitado</nz-tag>
+          <nz-tag>Rejeitado</nz-tag>
           }
           @else if (agente.situacao == 'aprovado' && agente.idPdv == null) {
           <nz-tag nzColor="blue">Aguardando vinculação</nz-tag>
@@ -108,6 +108,18 @@
               nzPopconfirmTitle="Tem certeza que deseja rejeitar este agente?" nzOkText="Sim" nzCancelText="Não"
               nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click" (nzOnConfirm)="rejectAgente(agente.id)">
               <nz-icon nzType="close" />
+            </button>
+            }
+            @if (agente.situacao == 'aprovado' && agente.idPdv == null) {
+            <button nz-button nzType="link" nz-tooltip="Vincular PDV" (click)="vincularPdv(agente.id)">
+              <nz-icon nzType="link" />
+            </button>
+            }
+            @if (agente.situacao == 'rejeitado') {
+            <button nz-button nzType="link" nz-tooltip="Excluir agente" nz-popconfirm
+              nzPopconfirmTitle="Tem certeza que deseja excluir este agente?" nzOkText="Sim" nzCancelText="Não"
+              nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click" (nzOnConfirm)="deleteAgente(agente.id)">
+              <nz-icon nzType="delete" />
             </button>
             }
 

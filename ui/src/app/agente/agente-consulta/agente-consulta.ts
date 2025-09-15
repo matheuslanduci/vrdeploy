@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Component, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { RouterModule } from '@angular/router'
+import { Router, RouterModule } from '@angular/router'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzCardModule } from 'ng-zorro-antd/card'
 import { NzGridModule } from 'ng-zorro-antd/grid'
@@ -68,7 +68,8 @@ export class AgenteConsulta implements OnInit {
 
   constructor(
     private notification: NzNotificationService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -303,6 +304,31 @@ export class AgenteConsulta implements OnInit {
         },
         error: () => {
           this.notification.error('Erro', 'Não foi possível rejeitar o agente')
+        }
+      })
+  }
+
+  vincularPdv(idAgente: number): Promise<boolean> {
+    return this.router.navigate(['pdvs'], {
+      queryParams: {
+        acao: 'vincular',
+        idAgente
+      }
+    })
+  }
+
+  deleteAgente(idAgente: number): void {
+    this.httpClient
+      .delete(`${environment.apiURL}/agente/${idAgente}`, {
+        withCredentials: true
+      })
+      .subscribe({
+        next: () => {
+          this.notification.success('Sucesso', 'Agente excluído com sucesso')
+          this.loadAgentes()
+        },
+        error: () => {
+          this.notification.error('Erro', 'Não foi possível excluir o agente')
         }
       })
   }

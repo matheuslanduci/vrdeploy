@@ -114,10 +114,22 @@ var setupCmd = &cobra.Command{
 					}
 
 					if payload.DeletedAt != nil {
-						fmt.Println()
-						fmt.Println("O agente foi removido pelo administrador do sistema.")
-						fmt.Println("Entre em contato com o administrador para mais informações.")
-						fmt.Println()
+						err := secret.Delete()
+
+						if err != nil {
+							fmt.Println("Erro ao remover chave secreta:", err)
+							return
+						}
+
+						agentePendenteSpinner.FinalMSG = "✘  Agente removido!\n"
+						agentePendenteSpinner.Stop()
+
+						fmt.Println(
+							boxStyle.Render(
+								"O agente foi removido pelo administrador do sistema.\n" +
+									"Você pode tentar cadastrar o agente novamente usando o comando `vrdeploy setup`.",
+							),
+						)
 						return
 					}
 
@@ -132,6 +144,13 @@ var setupCmd = &cobra.Command{
 
 						return
 					case "rejeitado":
+						err := secret.Delete()
+
+						if err != nil {
+							fmt.Println("Erro ao remover chave secreta:", err)
+							return
+						}
+
 						agentePendenteSpinner.FinalMSG = "✘  Agente rejeitado!\n"
 						agentePendenteSpinner.Stop()
 						fmt.Println(

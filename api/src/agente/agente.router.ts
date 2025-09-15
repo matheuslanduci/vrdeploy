@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
-import { and, count, desc, eq, getTableColumns, isNull } from 'drizzle-orm'
+import { and, count, desc, eq, getTableColumns, isNull, ne } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { nanoid } from 'nanoid'
 import z from 'zod'
@@ -223,5 +223,102 @@ agenteRouter.delete(
       .execute()
 
     return c.newResponse(null, 204)
+  }
+)
+
+agenteRouter.patch(
+  '/agente/:id/vincular-pdv',
+  requireAuth(),
+  requirePermission('agente', 'update'),
+  zValidator(
+    'param',
+    z.object({
+      id: z.coerce.number().min(1)
+    })
+  ),
+  zValidator(
+    'json',
+    z.object({
+      idPdv: z.number().min(1),
+      confirm: z.boolean().optional()
+    })
+  ),
+  async (c) => {
+    const { id } = c.req.valid('param')
+    const { idPdv, confirm } = c.req.valid('json')
+
+    const [existingAgente] = await db
+      .select()
+      .from(agenteTable)
+      .where(and(eq(agenteTable.id, id), isNull(agenteTable.deletedAt)))
+      .limit(1)
+      .execute()
+
+    if (!existingAgente) return c.text('Agente não encontrado', 404)
+
+    if (existingAgente.situacao !== 'aprovado')
+      return c.text('Apenas agentes aprovados podem ser vinculados a PDVs', 400)
+
+    const [pdvWithAgente] = await db
+      .select()
+      .from(agenteTable)
+      .where(
+        and(
+          eq(agenteTable.idPdv, idPdv),
+          ne(agenteTable.id, id),
+          isNull(agenteTable.deletedAt)
+        )
+      )
+      .limit(1)
+      .execute()
+
+    if (pdvWithAgente && !confirm)
+      return c.text(
+        'Já existe um agente vinculado a este PDV. Use o parâmetro confirm para substituir.',
+        400
+      )
+
+    const [pdv] = await db
+      .select()
+      .from(pdvTable)
+      .where(and(eq(pdvTable.id, idPdv), isNull(pdvTable.deletedAt)))
+      .limit(1)
+      .execute()
+
+    if (!pdv) return c.text('PDV não encontrado', 404)
+
+    await db
+      .update(agenteTable)
+      .set({
+        idPdv: null
+      })
+      .where(eq(agenteTable.idPdv, idPdv))
+      .execute()
+
+    const [updatedAgente] = await db
+      .update(agenteTable)
+      .set({
+        idPdv
+      })
+      .where(eq(agenteTable.id, id))
+      .returning({
+        id: agenteTable.id,
+        idPdv: agenteTable.idPdv,
+        enderecoMac: agenteTable.enderecoMac,
+        sistemaOperacional: agenteTable.sistemaOperacional,
+        ativo: agenteTable.ativo,
+        situacao: agenteTable.situacao,
+        createdAt: agenteTable.createdAt,
+        updatedAt: agenteTable.updatedAt,
+        deletedAt: agenteTable.deletedAt
+      })
+      .execute()
+
+    assert(updatedAgente, 'Erro ao atualizar agente')
+
+    const channel = createChannelName(updatedAgente.id, 'agente:updated')
+    await publisher.publish(channel, JSON.stringify(updatedAgente))
+
+    return c.json(updatedAgente)
   }
 )

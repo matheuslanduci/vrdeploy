@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Component, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { RouterModule } from '@angular/router'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzCardModule } from 'ng-zorro-antd/card'
 import { NzGridModule } from 'ng-zorro-antd/grid'
@@ -49,6 +49,10 @@ export class PdvConsulta implements OnInit {
   loadingRedes = false
   redes: Rede[] = []
 
+  vincularAgente = false
+  idAgente: number | null = null
+  confirmarVinculacaoVisible = false
+
   filtro = {
     idRede: null as number | null,
     idLoja: null as number | null
@@ -56,8 +60,17 @@ export class PdvConsulta implements OnInit {
 
   constructor(
     private notification: NzNotificationService,
-    private httpClient: HttpClient
-  ) {}
+    private httpClient: HttpClient,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.route.queryParams.subscribe((params) => {
+      if (params['idAgente'] != null && params['acao'] === 'vincular') {
+        this.vincularAgente = true
+        this.idAgente = Number(params['idAgente'])
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.loadData()
@@ -211,6 +224,44 @@ export class PdvConsulta implements OnInit {
           this.notification.error('Erro', 'Não foi possível excluir o PDV')
         }
       })
+  }
+
+  vincularAgenteFetch(idPdv: number, confirm: boolean): void {
+    if (!this.vincularAgente || this.idAgente == null) return
+
+    this.httpClient
+      .patch(
+        `${environment.apiURL}/agente/${this.idAgente}/vincular-pdv`,
+        { idPdv, confirm },
+        { withCredentials: true }
+      )
+      .subscribe({
+        next: () => {
+          this.notification.success('Sucesso', 'PDV vinculado com sucesso')
+          this.router.navigate(['/agentes'])
+        },
+        error: (err) => {
+          if (err.status === 400 && confirm === false) {
+            this.confirmarVinculacaoVisible = true
+            return
+          }
+
+          console.error(err)
+          this.notification.error('Erro', 'Não foi possível vincular o PDV')
+        }
+      })
+  }
+
+  vincularPdvAoAgente(event: PointerEvent, idPdv: number): void {
+    if (!this.confirmarVinculacaoVisible) {
+      event.stopImmediatePropagation()
+    }
+
+    this.vincularAgenteFetch(idPdv, false)
+  }
+
+  confirmarVinculacao(idPdv: number): void {
+    this.vincularAgenteFetch(idPdv, true)
   }
 }
 

@@ -16,6 +16,7 @@ import {
   EyeInvisibleOutline,
   EyeOutline,
   LayoutOutline,
+  LinkOutline,
   LinuxOutline,
   PlusOutline,
   UserOutline,
@@ -39,7 +40,8 @@ const icons: IconDefinition[] = [
   WindowsFill,
   LinuxOutline,
   CloseOutline,
-  WifiOutline
+  WifiOutline,
+  LinkOutline
 ]
 
 export const appConfig: ApplicationConfig = {

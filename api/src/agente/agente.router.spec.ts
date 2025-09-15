@@ -720,3 +720,355 @@ describe('DELETE /agente/:id', () => {
     expect(deletedAgente!.deletedAt).toBeInstanceOf(Date)
   })
 })
+
+describe('PATCH /agente/:id/vincular-pdv', () => {
+  it('should return 404 if agent does not exist', async () => {
+    const { headers } = await setupTest()
+
+    const response = await agenteRouter.request('/agente/1/vincular-pdv', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        idPdv: 1,
+        confirm: true
+      }),
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    expect(response.status).toBe(404)
+    expect(await response.text()).toBe('Agente não encontrado')
+  })
+
+  it('should return 404 if agent is deleted', async () => {
+    const [agente] = await db
+      .insert(agenteTable)
+      .values({
+        chaveSecreta: nanoid(48),
+        situacao: 'pendente',
+        enderecoMac: '00:1A:2B:3C:4D:5E',
+        sistemaOperacional: 'Linux',
+        deletedAt: new Date()
+      })
+      .returning()
+      .execute()
+
+    const { headers } = await setupTest()
+
+    const response = await agenteRouter.request(
+      `/agente/${agente!.id}/vincular-pdv`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          idPdv: 1,
+          confirm: true
+        }),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    expect(response.status).toBe(404)
+    expect(await response.text()).toBe('Agente não encontrado')
+  })
+
+  it('should return 400 if agent is not approved', async () => {
+    const [agente] = await db
+      .insert(agenteTable)
+      .values({
+        chaveSecreta: nanoid(48),
+        situacao: 'pendente',
+        enderecoMac: '00:1A:2B:3C:4D:5E',
+        sistemaOperacional: 'Linux'
+      })
+      .returning()
+      .execute()
+
+    const { headers } = await setupTest()
+
+    const response = await agenteRouter.request(
+      `/agente/${agente!.id}/vincular-pdv`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          idPdv: 1,
+          confirm: true
+        }),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    expect(response.status).toBe(400)
+    expect(await response.text()).toBe(
+      'Apenas agentes aprovados podem ser vinculados a PDVs'
+    )
+  })
+
+  it('should return 400 if PDV is already linked to another agent and confirm is not true', async () => {
+    const [pdv] = await db
+      .insert(pdvTable)
+      .values({
+        idLoja: 1,
+        nome: 'PDV 1'
+      })
+      .returning()
+      .execute()
+
+    const [agente1, _] = await db
+      .insert(agenteTable)
+      .values([
+        {
+          chaveSecreta: nanoid(48),
+          situacao: 'aprovado',
+          enderecoMac: '00:1A:2B:3C:4D:5E',
+          sistemaOperacional: 'Linux',
+          idPdv: null
+        },
+        {
+          chaveSecreta: nanoid(48),
+          situacao: 'aprovado',
+          enderecoMac: '00:1A:2B:3C:4D:5E',
+          sistemaOperacional: 'Linux',
+          idPdv: pdv!.id
+        }
+      ])
+      .returning()
+      .execute()
+
+    const { headers } = await setupTest()
+
+    const response = await agenteRouter.request(
+      `/agente/${agente1!.id}/vincular-pdv`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          idPdv: pdv!.id
+        }),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    expect(response.status).toBe(400)
+    expect(await response.text()).toBe(
+      'Já existe um agente vinculado a este PDV. Use o parâmetro confirm para substituir.'
+    )
+  })
+
+  it('should return 404 if PDV does not exist', async () => {
+    const [agente] = await db
+      .insert(agenteTable)
+      .values({
+        chaveSecreta: nanoid(48),
+        situacao: 'aprovado',
+        enderecoMac: '00:1A:2B:3C:4D:5E',
+        sistemaOperacional: 'Linux'
+      })
+      .returning()
+      .execute()
+
+    const { headers } = await setupTest()
+
+    const response = await agenteRouter.request(
+      `/agente/${agente!.id}/vincular-pdv`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          idPdv: 1,
+          confirm: true
+        }),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    expect(response.status).toBe(404)
+    expect(await response.text()).toBe('PDV não encontrado')
+  })
+
+  it('should return 200 and link the agent to the PDV', async () => {
+    const [pdv] = await db
+      .insert(pdvTable)
+      .values({
+        idLoja: 1,
+        nome: 'PDV 1'
+      })
+      .returning()
+      .execute()
+
+    const [agente] = await db
+      .insert(agenteTable)
+      .values({
+        chaveSecreta: nanoid(48),
+        situacao: 'aprovado',
+        enderecoMac: '00:1A:2B:3C:4D:5E',
+        sistemaOperacional: 'Linux'
+      })
+      .returning()
+      .execute()
+
+    const { headers } = await setupTest()
+
+    const response = await agenteRouter.request(
+      `/agente/${agente!.id}/vincular-pdv`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          idPdv: pdv!.id
+        }),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({
+      id: agente!.id,
+      idPdv: pdv!.id,
+      enderecoMac: '00:1A:2B:3C:4D:5E',
+      sistemaOperacional: 'Linux',
+      ativo: true,
+      situacao: 'aprovado',
+      createdAt: agente!.createdAt.toISOString(),
+      updatedAt: expect.any(String),
+      deletedAt: null
+    })
+
+    const [updatedAgente] = await db
+      .select()
+      .from(agenteTable)
+      .where(eq(agenteTable.id, agente!.id))
+      .execute()
+
+    expect(updatedAgente!.idPdv).toBe(pdv!.id)
+  })
+
+  it('should publish event when agent is linked to a PDV', async () => {
+    const [pdv] = await db
+      .insert(pdvTable)
+      .values({
+        idLoja: 1,
+        nome: 'PDV 1'
+      })
+      .returning()
+      .execute()
+
+    const [agente] = await db
+      .insert(agenteTable)
+      .values({
+        chaveSecreta: nanoid(48),
+        situacao: 'aprovado',
+        enderecoMac: '00:1A:2B:3C:4D:5E',
+        sistemaOperacional: 'Linux'
+      })
+      .returning()
+      .execute()
+
+    const pubsubSpy = vi.spyOn(publisher, 'publish')
+    const channel = createChannelName(agente!.id, 'agente:updated')
+
+    const { headers } = await setupTest()
+
+    await agenteRouter.request(`/agente/${agente!.id}/vincular-pdv`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        idPdv: pdv!.id
+      }),
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    expect(pubsubSpy).toHaveBeenCalledWith(channel, expect.any(String))
+  })
+
+  it('should replace the linked agent to the PDV if confirm is set', async () => {
+    const [pdv] = await db
+      .insert(pdvTable)
+      .values({
+        idLoja: 1,
+        nome: 'PDV 1'
+      })
+      .returning()
+      .execute()
+
+    const [agente1, agente2] = await db
+      .insert(agenteTable)
+      .values([
+        {
+          chaveSecreta: nanoid(48),
+          situacao: 'aprovado',
+          enderecoMac: '00:1A:2B:3C:4D:5E',
+          sistemaOperacional: 'Linux',
+          idPdv: pdv!.id
+        },
+        {
+          chaveSecreta: nanoid(48),
+          situacao: 'aprovado',
+          enderecoMac: '00:1A:2B:3C:4D:5F',
+          sistemaOperacional: 'Linux'
+        }
+      ])
+      .returning()
+      .execute()
+
+    const { headers } = await setupTest()
+
+    const response = await agenteRouter.request(
+      `/agente/${agente2!.id}/vincular-pdv`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          idPdv: pdv!.id,
+          confirm: true
+        }),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({
+      id: agente2!.id,
+      idPdv: pdv!.id,
+      enderecoMac: '00:1A:2B:3C:4D:5F',
+      sistemaOperacional: 'Linux',
+      ativo: true,
+      situacao: 'aprovado',
+      createdAt: agente2!.createdAt.toISOString(),
+      updatedAt: expect.any(String),
+      deletedAt: null
+    })
+
+    const [updatedAgente1] = await db
+      .select()
+      .from(agenteTable)
+      .where(eq(agenteTable.id, agente1!.id))
+      .execute()
+
+    expect(updatedAgente1!.idPdv).toBeNull()
+
+    const [updatedAgente2] = await db
+      .select()
+      .from(agenteTable)
+      .where(eq(agenteTable.id, agente2!.id))
+      .execute()
+
+    expect(updatedAgente2!.idPdv).toBe(pdv!.id)
+  })
+})

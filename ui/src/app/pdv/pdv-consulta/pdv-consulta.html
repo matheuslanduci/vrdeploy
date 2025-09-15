@@ -61,6 +61,17 @@
         <td>{{ pdv.rede.nome }}</td>
         <td>
           <div class="flex items-center gap-2">
+            @if (vincularAgente) {
+            <button nz-button nzType="dashed" nz-tooltip="Vincular agente" nz-popconfirm
+              nzPopconfirmTitle="Já existe um agente vinculado a este PDV. Deseja substituir?" nzOkText="Sim"
+              nzCancelText="Não" nzPopconfirmPlacement="topRight" (click)="vincularPdvAoAgente($event, pdv.id)"
+              (nzOnConfirm)="confirmarVinculacao(pdv.id)" [nzPopconfirmVisible]="confirmarVinculacaoVisible"
+              (nzPopconfirmVisibleChange)="confirmarVinculacaoVisible = $event">
+              <nz-icon nzType="link" />
+              <span>Vincular</span>
+            </button>
+            }
+            @else {
             <a nz-button nzType="link" [routerLink]="['/pdvs/edicao', pdv.id]">
               <nz-icon nzType="edit" />
             </a>
@@ -70,6 +81,7 @@
               (nzOnConfirm)="deletePdv(pdv.id)">
               <nz-icon nzType="delete" />
             </a>
+            }
           </div>
         </td>
       </tr>
