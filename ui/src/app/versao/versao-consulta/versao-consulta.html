@@ -35,7 +35,7 @@
             </a>
 
 
-            <a nz-button nzType="link" [routerLink]="['/versoes/implantar', versao.id]" [disabled]="!versao.filePresent"
+            <a nz-button nzType="link" (click)="implantarVersao(versao.id)" [disabled]="!versao.filePresent"
               [nz-tooltip]="versao.filePresent ? 'Implantar versão' : 'Arquivo não encontrado'">
               <nz-icon nzType="cloud-upload" />
             </a>

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Component, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Router, RouterModule } from '@angular/router'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzCardModule } from 'ng-zorro-antd/card'
 import { NzGridModule } from 'ng-zorro-antd/grid'
@@ -60,6 +60,10 @@ export class AgenteConsulta implements OnInit {
   loadingPdvs = false
   pdvs: PDV[] = []
 
+  implantarVersao = false
+  idVersao: number | null = null
+  agentesSelecionados: number[] = []
+
   filtro = {
     idRede: null as number | null,
     idLoja: null as number | null,
@@ -69,8 +73,16 @@ export class AgenteConsulta implements OnInit {
   constructor(
     private notification: NzNotificationService,
     private httpClient: HttpClient,
-    private router: Router
-  ) {}
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {
+    this.activatedRoute.queryParams.subscribe((params) => {
+      if (params['idVersao'] != null && params['acao'] === 'implantar') {
+        this.implantarVersao = true
+        this.idVersao = Number(params['idVersao'])
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.loadData()
@@ -329,6 +341,53 @@ export class AgenteConsulta implements OnInit {
         },
         error: () => {
           this.notification.error('Erro', 'Não foi possível excluir o agente')
+        }
+      })
+  }
+
+  onAllChecked(checked: boolean): void {
+    if (checked) {
+      this.agentesSelecionados = this.agentes.map((a) => a.id)
+    } else {
+      this.agentesSelecionados = []
+    }
+  }
+
+  onItemChecked(idAgente: number, checked: boolean): void {
+    if (checked) {
+      this.agentesSelecionados.push(idAgente)
+    } else {
+      this.agentesSelecionados = this.agentesSelecionados.filter(
+        (id) => id !== idAgente
+      )
+    }
+  }
+
+  implantarVersaoAgentes(): void {
+    this.httpClient
+      .post(
+        `${environment.apiURL}/implantacao`,
+        {
+          idVersao: this.idVersao,
+          idsAgentes: this.agentesSelecionados
+        },
+        {
+          withCredentials: true
+        }
+      )
+      .subscribe({
+        next: () => {
+          this.notification.success(
+            'Sucesso',
+            'Implantação iniciada com sucesso'
+          )
+          this.router.navigate(['implantacoes'])
+        },
+        error: () => {
+          this.notification.error(
+            'Erro',
+            'Não foi possível iniciar a implantação'
+          )
         }
       })
   }

@@ -1,0 +1,44 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">
+      Implantações
+    </h1>
+  </div>
+
+  <nz-table #table [nzData]="implantacoes" nzNoResult="Nenhuma implantação encontrada" [nzPageSize]="pageSize"
+    [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
+    (nzPageIndexChange)="loadData()" [nzPageSizeOptions]="[5, 10, 20]"
+    (nzPageSizeChange)="pageSize = $event; loadData()" [nzShowSizeChanger]="true" [nzLoading]="loading">
+    <thead>
+      <tr>
+        <th style="width: 200px;">
+          Código
+        </th>
+        <th>Versão</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (implantacao of table.data; track implantacao.id) {
+      <tr>
+        <td>{{ implantacao.id }}</td>
+        <td>{{ implantacao.versao.semver }}</td>
+        <td>
+          @switch (implantacao.status) {
+          @case ('concluido') {
+          <nz-tag nzColor="green">Concluído</nz-tag>
+          }
+          @case ('falha') {
+          <nz-tag nzColor="red">Falha</nz-tag>
+          }
+          @default {
+          <nz-tag nzColor="blue">Em andamento</nz-tag>
+          }
+          }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </nz-table>
+</div>

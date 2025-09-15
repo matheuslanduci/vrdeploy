@@ -14,6 +14,7 @@ import {
   CloudUploadOutline,
   CodeOutline,
   DeleteOutline,
+  DeploymentUnitOutline,
   DesktopOutline,
   EditOutline,
   EyeInvisibleOutline,
@@ -49,7 +50,8 @@ const icons: IconDefinition[] = [
   CodeOutline,
   BranchesOutline,
   InboxOutline,
-  CloudUploadOutline
+  CloudUploadOutline,
+  DeploymentUnitOutline
 ]
 
 export const appConfig: ApplicationConfig = {

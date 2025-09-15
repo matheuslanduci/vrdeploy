@@ -5,6 +5,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { agenteRouter } from './agente/agente.router'
 import { auth, requireAgenteAuth, requireAuth } from './auth'
+import { implantacaoRouter } from './implantacao/implantacao.router'
 import { lojaRouter } from './loja/loja.router'
 import { pdvRouter } from './pdv/pdv.router'
 import { pubsubAgenteHandler, pubsubUserHandler } from './pubsub/pubsub.router'
@@ -35,6 +36,7 @@ app.on(['POST', 'GET', 'OPTIONS'], '/api/auth/*', (c) =>
 )
 
 app.route('/api', agenteRouter)
+app.route('/api', implantacaoRouter)
 app.route('/api', lojaRouter)
 app.route('/api', pdvRouter)
 app.route('/api', redeRouter)

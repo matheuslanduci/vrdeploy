@@ -92,5 +92,12 @@ export const layoutRoutes: Routes = [
       import('../versao/versao-edicao/versao-edicao').then(
         (m) => m.VersaoEdicao
       )
+  },
+  {
+    path: 'implantacoes',
+    loadComponent: () =>
+      import('../implantacao/implantacao-consulta/implantacao-consulta').then(
+        (m) => m.ImplantacaoConsulta
+      )
   }
 ]

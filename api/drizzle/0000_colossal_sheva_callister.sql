@@ -14,6 +14,38 @@ CREATE TABLE "account" (
 	"updated_at" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "agente" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"id_pdv" bigint,
+	"endereco_mac" char(17) NOT NULL,
+	"sistema_operacional" varchar NOT NULL,
+	"ativo" boolean DEFAULT true NOT NULL,
+	"situacao" varchar NOT NULL,
+	"chave_secreta" char(48) NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "implantacao_agente" (
+	"id_implantacao" bigint NOT NULL,
+	"id_agente" bigint NOT NULL,
+	"status" varchar NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "implantacao_agente_id_implantacao_id_agente_pk" PRIMARY KEY("id_implantacao","id_agente")
+);
+--> statement-breakpoint
+CREATE TABLE "implantacao" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"id_versao" bigint NOT NULL,
+	"status" varchar NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "loja" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"id_rede" bigint NOT NULL,
@@ -77,6 +109,17 @@ CREATE TABLE "verification" (
 	"value" text NOT NULL,
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "versao" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"semver" varchar NOT NULL,
+	"descricao" varchar NOT NULL,
+	"storage_key" varchar NOT NULL,
+	"manifest" jsonb NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

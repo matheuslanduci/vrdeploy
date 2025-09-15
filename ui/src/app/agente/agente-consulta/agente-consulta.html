@@ -1,6 +1,16 @@
 <div class="flex flex-col gap-8">
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-bold">Agentes</h1>
+
+    @if (implantarVersao) {
+    <button nz-button nzType="primary" [disabled]="agentesSelecionados.length === 0" nz-popconfirm
+      nzPopconfirmTitle="Tem certeza que deseja implantar a versão nos agentes selecionados?" nzOkText="Sim"
+      nzCancelText="Não" nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click"
+      (nzOnConfirm)="implantarVersaoAgentes()">
+      <nz-icon nzType="plus" />
+      <span>Implantar</span>
+    </button>
+    }
   </div>
 
   <nz-card nzTitle="Filtros">
@@ -52,6 +62,11 @@
 
     <thead>
       <tr>
+        @if (implantarVersao) {
+        <th [nzChecked]="agentesSelecionados.length === agentes.length" (nzCheckedChange)="onAllChecked($event)"
+          [nzIndeterminate]="agentesSelecionados.length > 0 && agentesSelecionados.length < agentes.length">
+        </th>
+        }
         <th style="width: 200px;">Código</th>
         <th>Identificador</th>
         <th>Status</th>
@@ -64,6 +79,11 @@
     <tbody>
       @for (agente of table.data; track agente.id) {
       <tr>
+        @if (implantarVersao) {
+        <td [nzChecked]="agentesSelecionados.includes(agente.id)" (nzCheckedChange)="onItemChecked(agente.id, $event)">
+
+        </td>
+        }
         <td>{{ agente.id }}</td>
         <td>
           @if (

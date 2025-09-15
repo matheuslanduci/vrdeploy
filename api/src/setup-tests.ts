@@ -78,7 +78,9 @@ afterEach(async () => {
     'rede',
     'pdv',
     'agente',
-    'versao'
+    'versao',
+    'implantacao',
+    'implantacao_agente'
   ]
 
   for (const table of tables) {

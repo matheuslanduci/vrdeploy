@@ -7,7 +7,8 @@ export const heartbeatMessage = z.object({
 export const agenteEvent = z.enum([
   'agente:updated',
   'pty:session_started',
-  'pty:input'
+  'pty:input',
+  'implantacao:created'
 ])
 
 export const ptyOutputEvent = z.object({

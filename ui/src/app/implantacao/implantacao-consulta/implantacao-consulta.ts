@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http'
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 import { NzButtonModule } from 'ng-zorro-antd/button'
@@ -13,10 +13,10 @@ import { NzTableModule } from 'ng-zorro-antd/table'
 import { NzTagModule } from 'ng-zorro-antd/tag'
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip'
 import { environment } from '../../../environments/environment'
-import type { VersaoManifest } from '../../../versao'
+import { Versao } from '../../versao/versao-consulta/versao-consulta'
 
 @Component({
-  selector: 'app-versao-consulta',
+  selector: 'app-implantacao-consulta',
   imports: [
     NzButtonModule,
     RouterModule,
@@ -30,14 +30,14 @@ import type { VersaoManifest } from '../../../versao'
     NzTooltipModule,
     NzTagModule
   ],
-  templateUrl: './versao-consulta.html',
-  styleUrl: './versao-consulta.css'
+  templateUrl: './implantacao-consulta.html',
+  styleUrl: './implantacao-consulta.css'
 })
-export class VersaoConsulta implements OnInit {
+export class ImplantacaoConsulta {
   page = 1
   pageSize = 10
   total = 0
-  versoes: Versao[] = []
+  implantacoes: Implantacao[] = []
   loading = false
 
   constructor(
@@ -55,19 +55,19 @@ export class VersaoConsulta implements OnInit {
 
     this.httpClient
       .get<{
-        data: Versao[]
+        data: Implantacao[]
         meta: {
           total: number
         }
       }>(
-        `${environment.apiURL}/versao?page=${this.page}&pageSize=${this.pageSize}`,
+        `${environment.apiURL}/implantacao?page=${this.page}&pageSize=${this.pageSize}`,
         {
           withCredentials: true
         }
       )
       .subscribe({
         next: (response) => {
-          this.versoes = response.data
+          this.implantacoes = response.data
           this.total = response.meta.total
         },
         error: (err) => {
@@ -82,25 +82,14 @@ export class VersaoConsulta implements OnInit {
         }
       })
   }
-
-  implantarVersao(id: number) {
-    return this.router.navigate(['agentes'], {
-      queryParams: {
-        acao: 'implantar',
-        idVersao: id
-      }
-    })
-  }
 }
 
-export type Versao = {
+export type Implantacao = {
   createdAt: Date
   deletedAt: Date | null
   updatedAt: Date
   id: number
-  semver: string
-  descricao: string
-  storageKey: string
-  manifest: VersaoManifest
-  filePresent: boolean
+  idVersao: number
+  versao: Versao
+  status: 'em_andamento' | 'concluido' | 'falha'
 }
