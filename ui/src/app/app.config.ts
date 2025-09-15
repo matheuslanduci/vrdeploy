@@ -9,13 +9,16 @@ import { provideRouter } from '@angular/router'
 import { IconDefinition } from '@ant-design/icons-angular'
 import {
   ApartmentOutline,
+  BranchesOutline,
   CloseOutline,
+  CloudUploadOutline,
   CodeOutline,
   DeleteOutline,
   DesktopOutline,
   EditOutline,
   EyeInvisibleOutline,
   EyeOutline,
+  InboxOutline,
   LayoutOutline,
   LinkOutline,
   LinuxOutline,
@@ -43,7 +46,10 @@ const icons: IconDefinition[] = [
   CloseOutline,
   WifiOutline,
   LinkOutline,
-  CodeOutline
+  CodeOutline,
+  BranchesOutline,
+  InboxOutline,
+  CloudUploadOutline
 ]
 
 export const appConfig: ApplicationConfig = {

@@ -10,6 +10,7 @@ import { pdvRouter } from './pdv/pdv.router'
 import { pubsubAgenteHandler, pubsubUserHandler } from './pubsub/pubsub.router'
 import { redeRouter } from './rede/rede.router'
 import { sessaoTerminalRouter } from './sessao-terminal/sessao-terminal.router'
+import { versaoRouter } from './versao/versao.router'
 
 const app = new Hono()
 
@@ -17,7 +18,12 @@ app.use(
   cors({
     origin: 'http://localhost:4200',
     credentials: true,
-    allowHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-CSRF-Token',
+      'X-Requested-With'
+    ],
     exposeHeaders: ['X-CSRF-Token'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD']
   })
@@ -33,6 +39,7 @@ app.route('/api', lojaRouter)
 app.route('/api', pdvRouter)
 app.route('/api', redeRouter)
 app.route('/api', sessaoTerminalRouter)
+app.route('/api', versaoRouter)
 
 export const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({
   app

@@ -1,0 +1,50 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Versões</h1>
+    <button nz-button nzType="primary" routerLink="/versoes/cadastro">
+      <nz-icon nzType="plus" />
+      <span>Nova Versão</span>
+    </button>
+  </div>
+
+  <nz-table #table [nzData]="versoes" nzNoResult="Nenhuma versão encontrada" [nzPageSize]="pageSize"
+    [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
+    (nzPageIndexChange)="loadData()" [nzPageSizeOptions]="[5, 10, 20]"
+    (nzPageSizeChange)="pageSize = $event; loadData()" [nzShowSizeChanger]="true" [nzLoading]="loading">
+    <thead>
+      <tr>
+        <th style="width: 200px;">Código</th>
+        <th style="width: 200px;">Versão</th>
+        <th>Descrição</th>
+        <th style="width: 200px">
+          Ações
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (versao of table.data; track versao.id) {
+      <tr>
+        <td>{{ versao.id }}</td>
+        <td>{{ versao.semver }}</td>
+        <td>{{ versao.descricao }}</td>
+        <td>
+          <div class="flex items-center gap-2">
+            <a nz-button nzType="link" [routerLink]="['/versoes/edicao', versao.id]">
+              <nz-icon nzType="edit" />
+            </a>
+
+
+            <a nz-button nzType="link" [routerLink]="['/versoes/implantar', versao.id]" [disabled]="!versao.filePresent"
+              [nz-tooltip]="versao.filePresent ? 'Implantar versão' : 'Arquivo não encontrado'">
+              <nz-icon nzType="cloud-upload" />
+            </a>
+
+
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </nz-table>
+</div>

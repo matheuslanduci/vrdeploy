@@ -8,6 +8,7 @@ export const permissions = {
   loja: ['read', 'create', 'update', 'delete'],
   pdv: ['read', 'create', 'update', 'delete'],
   agente: ['read', 'approve', 'disconnect', 'update', 'delete'],
+  versao: ['read', 'create', 'update', 'delete'],
   user: [
     'create',
     'list',
@@ -29,6 +30,7 @@ export const user = ac.newRole({
   loja: ['read'],
   pdv: ['read'],
   agente: ['read'],
+  versao: ['read'],
   user: [],
   organization: [],
   member: [],
@@ -43,6 +45,7 @@ export const admin = ac.newRole({
   loja: ['read', 'create', 'update', 'delete'],
   pdv: ['read', 'create', 'update', 'delete'],
   agente: ['read', 'approve', 'disconnect', 'update', 'delete'],
+  versao: ['read', 'create', 'update', 'delete'],
   user: [
     'create',
     'list',

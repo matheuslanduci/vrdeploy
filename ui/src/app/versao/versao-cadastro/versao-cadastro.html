@@ -1,0 +1,67 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <div class="text-2xl  flex items-center gap-2">
+      <a routerLink="/versoes" class="hover:underline">Versões</a>
+      <span>/</span>
+      <span>
+        {{ isEdit ? 'Editar' : 'Cadastro' }}
+      </span>
+    </div>
+    <button nz-button nzType="primary" [disabled]="formGroup.invalid" (click)="submit()" [nzLoading]="loading">
+      <nz-icon nzType="plus" />
+      <span>Salvar</span>
+    </button>
+  </div>
+
+  <nz-card [nzTitle]="isEdit ? 'Edição de Versão' : 'Cadastro de Versão'" class="w-full" [nzLoading]="loading">
+    <form [formGroup]="formGroup" nz-row [nzGutter]="16">
+      <div nz-col nzSpan="8">
+        <div class="w-full flex flex-col gap-1">
+          <label for="numero">Número da Versão</label>
+          <input placeholder="Insira o número da versão aqui" nz-input id="numero" class="mb-4"
+            formControlName="semver" />
+        </div>
+      </div>
+
+      <div nz-col nzSpan="16"></div>
+
+      <div nz-col nzSpan="16">
+        <div class="w-full flex flex-col gap-1 mt-2">
+          <label for="descricao">Descrição</label>
+          <textarea placeholder="Insira a descrição da versão aqui" nz-input id="descricao" class="mb-4"
+            formControlName="descricao" rows="4"></textarea>
+        </div>
+      </div>
+
+      <div nz-col nzSpan="16">
+        <div class="w-full flex flex-col gap-1 mt-2">
+          <div class="flex items-center justify-between">
+            <label for="manifest">Manifest (JSON)</label>
+            <button nz-button (click)="prettifyManifest()" nzSize="small">Formatar</button>
+          </div>
+          <textarea placeholder="Insira o manifest da versão aqui" nz-input id="manifest" class="mb-4"
+            formControlName="manifest" rows="4"></textarea>
+        </div>
+      </div>
+
+      <div nz-col nzSpan="8"></div>
+
+      @if (isEdit) {
+      <div nz-col nzSpan="24" class="mt-4 pb-12">
+        <nz-upload nzType="drag" [nzMultiple]="false" [nzShowUploadList]="true" [nzAction]="uploadUrl" nzAccept=".zip"
+          nzName="file" (nzChange)="handleUploadChange($event)" nzWithCredentials="true" [nzDisabled]="loading">
+          <p class="ant-upload-drag-icon">
+            <nz-icon nzType="inbox" />
+          </p>
+          <p class="ant-upload-text">
+            Clique ou arraste o arquivo para esta área para fazer upload
+          </p>
+          <p class="ant-upload-hint">
+            Apenas arquivos .zip são permitidos.
+          </p>
+        </nz-upload>
+      </div>
+      }
+    </form>
+  </nz-card>
+</div>

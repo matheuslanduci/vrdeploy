@@ -71,5 +71,26 @@ export const layoutRoutes: Routes = [
       import('../agente/agente-sessao-terminal/agente-sessao-terminal').then(
         (m) => m.AgenteSessaoTerminal
       )
+  },
+  {
+    path: 'versoes',
+    loadComponent: () =>
+      import('../versao/versao-consulta/versao-consulta').then(
+        (m) => m.VersaoConsulta
+      )
+  },
+  {
+    path: 'versoes/cadastro',
+    loadComponent: () =>
+      import('../versao/versao-cadastro/versao-cadastro').then(
+        (m) => m.VersaoCadastro
+      )
+  },
+  {
+    path: 'versoes/edicao/:id',
+    loadComponent: () =>
+      import('../versao/versao-edicao/versao-edicao').then(
+        (m) => m.VersaoEdicao
+      )
   }
 ]

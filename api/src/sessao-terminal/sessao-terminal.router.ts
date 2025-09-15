@@ -6,7 +6,7 @@ import z from 'zod'
 import { agenteTable } from '~/agente/agente.sql'
 import { requireAuth, requirePermission } from '~/auth'
 import { db } from '~/database'
-import { generateAgenteChannelName } from '~/pubsub/pubsub'
+import { generateAgenteChannelName, publisher } from '~/pubsub/pubsub'
 import { redis } from '~/redis'
 
 export const sessaoTerminalRouter = new Hono()
@@ -49,7 +49,7 @@ sessaoTerminalRouter.post(
       'EX',
       300
     )
-    await redis.publish(
+    await publisher.publish(
       generateAgenteChannelName(idAgente, 'pty:session_started'),
       JSON.stringify({ idAgente })
     )

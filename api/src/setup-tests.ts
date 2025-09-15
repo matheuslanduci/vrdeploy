@@ -28,6 +28,12 @@ vi.mock('~/redis', () => ({
   }
 }))
 
+vi.mock('~/s3', () => ({
+  s3: {
+    send: vi.fn().mockResolvedValue({})
+  }
+}))
+
 vi.mock('~/pubsub/pubsub', async (original) => {
   const actual = (await original()) as any
 
@@ -71,7 +77,8 @@ afterEach(async () => {
     'loja',
     'rede',
     'pdv',
-    'agente'
+    'agente',
+    'versao'
   ]
 
   for (const table of tables) {

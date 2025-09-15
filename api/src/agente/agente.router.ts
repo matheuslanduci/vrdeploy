@@ -42,6 +42,7 @@ agenteRouter.get(
       idRede ? eq(redeTable.id, idRede) : undefined
     )
 
+    // TODO: Promise.all em todas as consultas que podem ser feitas em paralelo
     const agentes = await db
       .select({
         id: agenteTable.id,
