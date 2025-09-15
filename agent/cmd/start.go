@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -37,7 +34,12 @@ var startCmd = &cobra.Command{
 		}
 
 		ps := pubsub.New(
-			[]string{pubsub.AgenteUpdatedEvent, pubsub.PtySessionStartedEvent, pubsub.PtyInputEvent},
+			[]string{
+				pubsub.AgenteUpdatedEvent,
+				pubsub.PtySessionStartedEvent,
+				pubsub.PtyInputEvent,
+				pubsub.ImplantacaoCreatedEvent,
+			},
 		)
 
 		ptyManager := pty.NewPtyManager(ps)
@@ -49,6 +51,10 @@ var startCmd = &cobra.Command{
 		ps.Subscribe(
 			pubsub.PtyInputEvent,
 			ptyManager.HandleInput(),
+		)
+		ps.Subscribe(
+			pubsub.ImplantacaoCreatedEvent,
+			pubsub.HandleImplantacaoCreated(),
 		)
 
 		tries := 0

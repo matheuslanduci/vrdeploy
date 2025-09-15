@@ -17,7 +17,7 @@ import { requireAuth, requirePermission } from '~/auth'
 import { db } from '~/database'
 import { env } from '~/env'
 import { implantacaoAgenteTable } from '~/implantacao-agente/implantacao-agente.sql'
-import { isAgenteOnline } from '~/pubsub/pubsub'
+import { isAgenteOnline, publisher } from '~/pubsub/pubsub'
 import { s3 } from '~/s3'
 import { assert } from '~/util/assert'
 import { versaoTable } from '~/versao/versao.sql'
@@ -144,10 +144,18 @@ implantacaoRouter.post(
           new GetObjectCommand({
             Bucket: env.S3_BUCKET,
             Key: versao.storageKey
-          })
+          }),
+          {
+            expiresIn: 60 * 60 // 1 hour
+          }
         )
 
-        const message = {}
+        const message = {
+          url,
+          manifest: versao.manifest
+        }
+
+        await publisher.publish(channel, JSON.stringify(message))
       }
     }
 

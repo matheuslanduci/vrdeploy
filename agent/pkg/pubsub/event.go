@@ -4,9 +4,10 @@ import "encoding/json"
 
 const (
 	// Subscriptions
-	AgenteUpdatedEvent     = "agente:updated"
-	PtySessionStartedEvent = "pty:session_started"
-	PtyInputEvent          = "pty:input"
+	AgenteUpdatedEvent      = "agente:updated"
+	PtySessionStartedEvent  = "pty:session_started"
+	PtyInputEvent           = "pty:input"
+	ImplantacaoCreatedEvent = "implantacao:created"
 	// Publishes
 	PtyOutputEvent       = "pty:output"
 	PtySessionEndedEvent = "pty:session_ended"
