@@ -138,6 +138,11 @@ var setupCmd = &cobra.Command{
 						"Você já pode cancelar este processo (Ctrl+C) e usar o comando `vrdeploy start`.",
 					),
 				)
+				err = system.AddToStartup()
+
+				if err != nil {
+					fmt.Println("Erro ao adicionar o vrdeploy na inicialização do sistema:", err)
+				}
 
 				return
 			case "rejeitado":
@@ -146,6 +151,12 @@ var setupCmd = &cobra.Command{
 				if err != nil {
 					fmt.Println("Erro ao remover chave secreta:", err)
 					return
+				}
+
+				err = system.RemoveFromStartup()
+
+				if err != nil {
+					// Não é um erro crítico
 				}
 
 				agentePendenteSpinner.FinalMSG = "✘  Agente rejeitado!\n"
