@@ -9,13 +9,18 @@ import { provideRouter } from '@angular/router'
 import { IconDefinition } from '@ant-design/icons-angular'
 import {
   ApartmentOutline,
+  CloseOutline,
   DeleteOutline,
+  DesktopOutline,
   EditOutline,
   EyeInvisibleOutline,
   EyeOutline,
   LayoutOutline,
+  LinuxOutline,
   PlusOutline,
-  UserOutline
+  UserOutline,
+  WifiOutline,
+  WindowsFill
 } from '@ant-design/icons-angular/icons'
 import { provideNzI18n, pt_BR } from 'ng-zorro-antd/i18n'
 import { provideNzIcons } from 'ng-zorro-antd/icon'
@@ -29,7 +34,12 @@ const icons: IconDefinition[] = [
   UserOutline,
   PlusOutline,
   EditOutline,
-  DeleteOutline
+  DeleteOutline,
+  DesktopOutline,
+  WindowsFill,
+  LinuxOutline,
+  CloseOutline,
+  WifiOutline
 ]
 
 export const appConfig: ApplicationConfig = {

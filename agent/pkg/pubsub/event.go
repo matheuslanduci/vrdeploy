@@ -7,9 +7,9 @@ const (
 )
 
 type EventMessage struct {
-	Type  string          `json:"type"`
-	Event string          `json:"event"`
-	Data  json.RawMessage `json:"data"`
+	Type  string `json:"type"`
+	Event string `json:"event"`
+	Data  string `json:"data"`
 }
 
 type SubscribeToEvent struct {

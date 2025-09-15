@@ -2,8 +2,9 @@ import { WSEvents } from 'hono/ws'
 import { Agente } from '~/agente/agente.sql'
 import {
   createChannelName,
-  pubsub,
   registerAgente,
+  renewAgente,
+  subscriber,
   unregisterAgente
 } from './pubsub'
 import { agenteMessage } from './ws-message'
@@ -33,14 +34,22 @@ export function pubsubAgenteHandler(agente: Agente) {
           case 'subscribe': {
             const channel = createChannelName(agente.id, message.event)
 
-            pubsub.subscribe(channel, (data) => {
-              ws.send(
-                JSON.stringify({
-                  type: 'event',
-                  event: message.event,
-                  data
-                })
-              )
+            console.log(`Subscribing to channel ${channel}`)
+
+            // Corrigir isso no futuro para evitar múltiplas inscrições
+            subscriber.subscribe(channel).then(() => {
+              subscriber.on('message', (chan, data) => {
+                console.log(chan === channel, chan, channel)
+                if (chan === channel) {
+                  ws.send(
+                    JSON.stringify({
+                      type: 'event',
+                      event: message.event,
+                      data
+                    })
+                  )
+                }
+              })
             })
 
             ws.send(
@@ -53,6 +62,7 @@ export function pubsubAgenteHandler(agente: Agente) {
             break
           }
           case 'heartbeat': {
+            renewAgente(agente.id)
             ws.send(
               JSON.stringify({
                 type: 'ack'

@@ -33,9 +33,11 @@ vi.mock('~/pubsub/pubsub', async (original) => {
 
   return {
     ...actual,
-    pubsub: {
-      publish: vi.fn(),
+    subscriber: {
       subscribe: vi.fn()
+    },
+    publisher: {
+      publish: vi.fn()
     }
   }
 })

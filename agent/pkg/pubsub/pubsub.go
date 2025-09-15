@@ -2,7 +2,6 @@ package pubsub
 
 import (
 	"agent/pkg/secret"
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -21,7 +20,7 @@ func New(events []string) *PubSub {
 }
 
 func (p *PubSub) Connect(
-	onMessage func(event string, payload json.RawMessage),
+	onMessage func(event string, data string),
 ) {
 	dialer := websocket.Dialer{}
 
@@ -80,13 +79,16 @@ func (p *PubSub) Connect(
 				return
 			}
 
-			onMessage(parsed.Event, parsed.Data)
+			if parsed.Type != "event" {
+				continue
+			}
 
+			onMessage(parsed.Event, parsed.Data)
 		}
 	}()
 
 	go func() {
-		ticker := time.NewTicker(15 * time.Second)
+		ticker := time.NewTicker(1 * time.Minute)
 
 		defer ticker.Stop()
 

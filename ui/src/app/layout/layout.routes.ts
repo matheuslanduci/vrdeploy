@@ -57,5 +57,12 @@ export const layoutRoutes: Routes = [
     path: 'pdvs/edicao/:id',
     loadComponent: () =>
       import('../pdv/pdv-edicao/pdv-edicao').then((m) => m.PdvEdicao)
+  },
+  {
+    path: 'agentes',
+    loadComponent: () =>
+      import('../agente/agente-consulta/agente-consulta').then(
+        (m) => m.AgenteConsulta
+      )
   }
 ]

@@ -2,10 +2,15 @@ import z from 'zod'
 import { redis } from '~/redis'
 import { agenteEvent } from './ws-message'
 
-export const pubsub = redis.duplicate()
+export const subscriber = redis.duplicate()
+export const publisher = redis.duplicate()
 
 export async function registerAgente(agenteId: number) {
   await redis.set(`agente:${agenteId}`, 'online', 'EX', 60)
+}
+
+export async function renewAgente(agenteId: number) {
+  await redis.expire(`agente:${agenteId}`, 60)
 }
 
 export async function unregisterAgente(agenteId: number) {

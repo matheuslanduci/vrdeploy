@@ -7,7 +7,7 @@ export const permissions = {
   rede: ['read', 'create', 'update', 'delete'],
   loja: ['read', 'create', 'update', 'delete'],
   pdv: ['read', 'create', 'update', 'delete'],
-  agente: ['read', 'approve', 'disconnect'],
+  agente: ['read', 'approve', 'disconnect', 'delete'],
   user: [
     'create',
     'list',
@@ -42,7 +42,7 @@ export const admin = ac.newRole({
   rede: ['read', 'create', 'update', 'delete'],
   loja: ['read', 'create', 'update', 'delete'],
   pdv: ['read', 'create', 'update', 'delete'],
-  agente: ['read', 'approve', 'disconnect'],
+  agente: ['read', 'approve', 'disconnect', 'delete'],
   user: [
     'create',
     'list',

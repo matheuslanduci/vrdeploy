@@ -1,0 +1,120 @@
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Agentes</h1>
+  </div>
+
+  <nz-card nzTitle="Filtros">
+    <div nz-row nzGutter="16">
+      <div nz-col nzSpan="8">
+        <div class="flex flex-col gap-1">
+          <label for="rede">Rede</label>
+          <nz-select nzPlaceHolder="Selecione uma rede" [(ngModel)]="filtro.idRede" nzAllowClear
+            (nzScrollToBottom)="loadNextRedes()" (ngModelChange)="loadData(true)" [nzLoading]="loadingRedes"
+            nzShowSearch nzOptionHeight="32">
+            @for (rede of redes; track rede.id) {
+            <nz-option [nzValue]="rede.id" [nzLabel]="rede.nome" />
+            }
+          </nz-select>
+        </div>
+      </div>
+      <div nz-col nzSpan="8">
+        <div class="flex flex-col gap-1">
+          <label for="loja">Loja</label>
+          <nz-select nzPlaceHolder="Selecione uma loja" [(ngModel)]="filtro.idLoja" nzAllowClear
+            (nzScrollToBottom)="loadNextLojas()" (ngModelChange)="loadData(true)" [nzLoading]="loadingLojas"
+            nzShowSearch nzOptionHeight="32">
+            @for (loja of lojas; track loja.id) {
+            <nz-option [nzValue]="loja.id" [nzLabel]="loja.nome" />
+            }
+          </nz-select>
+        </div>
+      </div>
+
+      <div nz-col nzSpan="8">
+        <div class="flex flex-col gap-1">
+          <label for="pdv">PDV</label>
+          <nz-select nzPlaceHolder="Selecione um PDV" [(ngModel)]="filtro.idPdv" nzAllowClear
+            (nzScrollToBottom)="loadNextPdvs()" (ngModelChange)="loadData(true)" [nzLoading]="loadingPdvs" nzShowSearch
+            nzOptionHeight="32">
+            @for (pdv of pdvs; track pdv.id) {
+            <nz-option [nzValue]="pdv.id" [nzLabel]="pdv.nome" />
+            }
+          </nz-select>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+
+  <nz-table #table [nzData]="agentes" nzNoResult="Nenhum agente encontrado" [nzPageSize]="pageSize"
+    [nzFrontPagination]="false" [nzPageIndex]="page" (nzPageIndexChange)="page = $event" [nzTotal]="total"
+    (nzPageIndexChange)="loadPdvs()" [nzPageSizeOptions]="[5, 10, 20]"
+    (nzPageSizeChange)="pageSize = $event; loadPdvs()" [nzShowSizeChanger]="true" [nzLoading]="loading">
+
+    <thead>
+      <tr>
+        <th style="width: 200px;">Código</th>
+        <th>Identificador</th>
+        <th>Status</th>
+        <th style="width: 200px">
+          Ações
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (agente of table.data; track agente.id) {
+      <tr>
+        <td>{{ agente.id }}</td>
+        <td>
+          @if (
+          agente.sistemaOperacional.includes('Windows')
+          ) {
+          <nz-icon nzType="windows" nzTheme="fill" class="mr-2" />
+          }
+          @else {
+          <nz-icon nzType="linux" class="mr-2" />
+          }
+          {{ agente.sistemaOperacional }} ({{ agente.enderecoMac }})
+        </td>
+        <td>
+          @if (agente.situacao == 'pendente') {
+          <nz-tag nzColor="orange">Pendente</nz-tag>
+          }
+          @else if (agente.situacao == 'rejeitado') {
+          <nz-tag nzColor="red">Rejeitado</nz-tag>
+          }
+          @else if (agente.situacao == 'aprovado' && agente.idPdv == null) {
+          <nz-tag nzColor="blue">Aguardando vinculação</nz-tag>
+          }
+          @else if (agente.online) {
+          <nz-tag nzColor="green">
+            <nz-icon nzType="wifi" class="animate-pulse" />
+            Conectado
+          </nz-tag>
+          }
+          @else {
+          <nz-tag nzColor="red">Desconectado</nz-tag>
+          }
+        </td>
+        <td>
+          <div class="flex items-center gap-2">
+            @if (agente.situacao == 'pendente') {
+            <button nz-button nzType="link" class="!text-green-500" nz-tooltip="Aprovar agente" nz-popconfirm
+              nzPopconfirmTitle="Tem certeza que deseja aprovar este agente?" nzOkText="Sim" nzCancelText="Não"
+              nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click" (nzOnConfirm)="approveAgente(agente.id)">
+              <nz-icon nzType="check" />
+            </button>
+            <button nz-button nzType="link" nzDanger nz-tooltip="Rejeitar agente" nz-popconfirm
+              nzPopconfirmTitle="Tem certeza que deseja rejeitar este agente?" nzOkText="Sim" nzCancelText="Não"
+              nzPopconfirmPlacement="topRight" nzPopconfirmTrigger="click" (nzOnConfirm)="rejectAgente(agente.id)">
+              <nz-icon nzType="close" />
+            </button>
+            }
+
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </nz-table>
+</div>

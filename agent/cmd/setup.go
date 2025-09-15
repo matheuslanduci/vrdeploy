@@ -100,32 +100,46 @@ var setupCmd = &cobra.Command{
 			[]string{pubsub.AgenteUpdatedEvent},
 		)
 
-		ps.Connect(func(event string, data json.RawMessage) {
+		ps.Connect(func(event string, data string) {
 			switch event {
 			case pubsub.AgenteUpdatedEvent:
 				{
 					var payload pubsub.AgenteUpdatedPayload
 
-					err := json.Unmarshal(data, &payload)
+					err := json.Unmarshal([]byte(data), &payload)
 
 					if err != nil {
+						fmt.Println("Erro ao parsear payload:", err)
+						return
+					}
+
+					if payload.DeletedAt != nil {
+						fmt.Println()
+						fmt.Println("O agente foi removido pelo administrador do sistema.")
+						fmt.Println("Entre em contato com o administrador para mais informações.")
+						fmt.Println()
 						return
 					}
 
 					switch payload.Situacao {
 					case "aprovado":
 						agentePendenteSpinner.Stop()
-						fmt.Println()
-						fmt.Println(foregroundStyle.Render("O agente foi aprovado com sucesso!"))
-						fmt.Println()
-						fmt.Println("Você já pode fechar esta janela e começar a usar o vrdeploy.")
-						fmt.Println()
+						fmt.Println(
+							boxStyle.Render(
+								"Você já pode cancelar este processo (Ctrl+C) e usar o comando `vrdeploy start`.",
+							),
+						)
+
 						return
 					case "rejeitado":
-						fmt.Println()
-						fmt.Println("O agente foi rejeitado pelo administrador do sistema.")
-						fmt.Println("Entre em contato com o administrador para mais informações.")
-						fmt.Println()
+						agentePendenteSpinner.FinalMSG = "✘  Agente rejeitado!\n"
+						agentePendenteSpinner.Stop()
+						fmt.Println(
+							boxStyle.Render(
+								"O agente foi rejeitado pelo administrador do sistema.\n" +
+									"Você pode tentar cadastrar o agente novamente usando o comando `vrdeploy setup`.",
+							),
+						)
 						return
 					}
 				}
