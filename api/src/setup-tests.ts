@@ -19,6 +19,27 @@ await client.connect()
 await client.query(`create schema if not exists "${randomId}"`)
 await client.query(`set search_path to "${randomId}"`)
 
+vi.mock('~/redis', () => ({
+  redis: {
+    duplicate: vi.fn(),
+    set: vi.fn(),
+    get: vi.fn(),
+    del: vi.fn()
+  }
+}))
+
+vi.mock('~/pubsub/pubsub', async (original) => {
+  const actual = (await original()) as any
+
+  return {
+    ...actual,
+    pubsub: {
+      publish: vi.fn(),
+      subscribe: vi.fn()
+    }
+  }
+})
+
 const testDb = drizzle(client as any)
 
 vi.mock('./database', () => ({
@@ -47,7 +68,8 @@ afterEach(async () => {
     'verification',
     'loja',
     'rede',
-    'pdv'
+    'pdv',
+    'agente'
   ]
 
   for (const table of tables) {

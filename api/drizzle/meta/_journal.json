@@ -8,6 +8,13 @@
       "when": 1757768453680,
       "tag": "0000_initial_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757856168371,
+      "tag": "0001_abnormal_storm",
+      "breakpoints": true
     }
   ]
 }

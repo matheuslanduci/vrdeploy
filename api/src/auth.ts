@@ -3,8 +3,10 @@ import { APIError, betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { createAuthMiddleware } from 'better-auth/api'
 import { admin as adminPlugin } from 'better-auth/plugins'
+import { and, eq, isNull } from 'drizzle-orm'
 import { createMiddleware } from 'hono/factory'
 import { accountTable } from './account/account.sql'
+import { Agente, agenteTable } from './agente/agente.sql'
 import { db } from './database'
 import { sessionTable } from './session/session.sql'
 import { userTable } from './user/user.sql'
@@ -89,9 +91,42 @@ export function requirePermission<T extends keyof typeof permissions>(
   })
 }
 
+export function requireAgenteAuth() {
+  return createMiddleware<AgenteAuthVariables>(async (c, next) => {
+    const token = c.req.header('X-Agente-Token')
+
+    if (!token) return c.text('Unauthorized', 401)
+
+    const [agente] = await db
+      .select()
+      .from(agenteTable)
+      .where(
+        and(
+          eq(agenteTable.chaveSecreta, token),
+          eq(agenteTable.ativo, true),
+          isNull(agenteTable.deletedAt)
+        )
+      )
+      .limit(1)
+      .execute()
+
+    if (!agente) return c.text('Unauthorized', 401)
+
+    c.set('agente', agente)
+
+    return next()
+  })
+}
+
 type AuthVariables = {
   Variables: {
     user: typeof auth.$Infer.Session.user
     session: typeof auth.$Infer.Session.session
+  }
+}
+
+type AgenteAuthVariables = {
+  Variables: {
+    agente: Agente
   }
 }
