@@ -4,10 +4,10 @@ import (
 	"context"
 	"log"
 	"os"
-	"os/exec"
+	"runtime"
 	"sync"
 
-	"github.com/creack/pty"
+	"github.com/runletapp/go-console"
 )
 
 func Start(
@@ -16,25 +16,33 @@ func Start(
 	outputChan chan []byte,
 	closeChan chan struct{},
 ) {
-	shell := os.Getenv("SHELL")
-
-	if shell == "" {
-		if _, err := exec.LookPath("bash"); err == nil {
-			shell = "bash"
-		} else {
-			shell = "sh"
-		}
-	}
-
-	cmd := exec.Command(shell)
-
-	ptmx, err := pty.Start(cmd)
+	proc, err := console.New(120, 60)
 
 	if err != nil {
-		log.Fatalf("Erro ao iniciar o pty: %v", err)
+		log.Fatalf("Erro ao criar console: %v", err)
 	}
 
-	defer func() { _ = ptmx.Close() }()
+	defer proc.Close()
+
+	var args []string
+
+	if runtime.GOOS == "windows" {
+		// powershell has some issues like clearing the screen
+		// args = []string{"powershell.exe"}
+		args = []string{"cmd.exe"}
+	} else {
+		shell := os.Getenv("SHELL")
+
+		if shell == "" {
+			shell = "bash"
+		}
+
+		args = []string{shell}
+	}
+
+	if err := proc.Start(args); err != nil {
+		log.Fatalf("Erro ao iniciar processo: %v", err)
+	}
 
 	var closeOnce sync.Once
 
@@ -46,7 +54,6 @@ func Start(
 
 	go func() {
 		defer safeClose()
-
 		for {
 			select {
 			case <-ctx.Done():
@@ -55,7 +62,8 @@ func Start(
 				if len(data) == 0 {
 					continue
 				}
-				if _, err := ptmx.Write(data); err != nil {
+				if _, err := proc.Write(data); err != nil {
+					println("Erro ao escrever no processo:", err)
 					return
 				}
 			}
@@ -64,12 +72,11 @@ func Start(
 
 	go func() {
 		defer safeClose()
-
 		buf := make([]byte, 1024)
-
 		for {
-			n, err := ptmx.Read(buf)
+			n, err := proc.Read(buf)
 			if err != nil {
+				println("Erro ao ler do processo:", err)
 				return
 			}
 			if n > 0 {
@@ -84,7 +91,9 @@ func Start(
 
 	go func() {
 		defer safeClose()
-		_ = cmd.Wait()
+		if _, err := proc.Wait(); err != nil {
+			log.Printf("Process wait error: %v", err)
+		}
 	}()
 
 	<-closeChan

@@ -7,7 +7,11 @@ import { requireAuth, requirePermission } from '~/auth'
 import { db } from '~/database'
 import { lojaTable } from '~/loja/loja.sql'
 import { pdvTable } from '~/pdv/pdv.sql'
-import { createChannelName, isAgenteOnline, publisher } from '~/pubsub/pubsub'
+import {
+  generateAgenteChannelName,
+  isAgenteOnline,
+  publisher
+} from '~/pubsub/pubsub'
 import { redeTable } from '~/rede/rede.sql'
 import { assert } from '~/util/assert'
 import { agenteSituacaoEnum, agenteTable } from './agente.sql'
@@ -179,7 +183,10 @@ agenteRouter.patch(
 
     assert(updatedAgente, 'Erro ao atualizar agente')
 
-    const channel = createChannelName(updatedAgente.id, 'agente:updated')
+    const channel = generateAgenteChannelName(
+      updatedAgente.id,
+      'agente:updated'
+    )
     await publisher.publish(channel, JSON.stringify(updatedAgente))
 
     return c.json(updatedAgente)
@@ -316,7 +323,10 @@ agenteRouter.patch(
 
     assert(updatedAgente, 'Erro ao atualizar agente')
 
-    const channel = createChannelName(updatedAgente.id, 'agente:updated')
+    const channel = generateAgenteChannelName(
+      updatedAgente.id,
+      'agente:updated'
+    )
     await publisher.publish(channel, JSON.stringify(updatedAgente))
 
     return c.json(updatedAgente)

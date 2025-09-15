@@ -1,1 +1,16 @@
-<p>agente-sessao-terminal works!</p>
+<div class="flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Agente</h1>
+    <button nz-button nzType="text" routerLink="/agantes">
+      <nz-icon nzType="plus" />
+      <span>Voltar</span>
+    </button>
+  </div>
+
+  @if (loading) {
+  <nz-spin nzTip="Carregando..." class="w-full flex justify-center my-8"></nz-spin>
+  }
+  <div #terminalContainer class="w-full h-[500px]">
+
+  </div>
+</div>

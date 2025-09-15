@@ -100,7 +100,7 @@ func (p *PubSub) Connect() error {
 			parsed, err := ParseEventMessage(message)
 
 			if err != nil {
-				log.Println("Erro ao parsear mensagem:")
+				log.Println("Erro ao parsear mensagem:", err, string(message))
 				continue
 			}
 

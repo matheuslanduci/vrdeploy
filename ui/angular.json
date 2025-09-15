@@ -22,7 +22,11 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css", "src/theme.less"]
+            "styles": [
+              "../node_modules/@xterm/xterm/css/xterm.css",
+              "src/styles.css",
+              "src/theme.less"
+            ]
           },
           "configurations": {
             "production": {

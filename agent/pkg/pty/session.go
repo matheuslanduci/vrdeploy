@@ -8,5 +8,5 @@ type PtySession struct {
 	inputChan  chan []byte
 	outputChan chan []byte
 	closeChan  chan struct{}
-	sessionID  string
+	idAgente   int
 }

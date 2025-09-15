@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 import { db } from '~/database'
 import { lojaTable } from '~/loja/loja.sql'
 import { pdvTable } from '~/pdv/pdv.sql'
-import { createChannelName, publisher } from '~/pubsub/pubsub'
+import { generateAgenteChannelName, publisher } from '~/pubsub/pubsub'
 import { redeTable } from '~/rede/rede.sql'
 import { redis } from '~/redis'
 import { setupTest } from '~/test-utils'
@@ -569,7 +569,7 @@ describe('PATCH /agente/:id', () => {
       .execute()
 
     const pubsubSpy = vi.spyOn(publisher, 'publish')
-    const channel = createChannelName(agente!.id, 'agente:updated')
+    const channel = generateAgenteChannelName(agente!.id, 'agente:updated')
 
     const { headers } = await setupTest()
 
@@ -977,7 +977,7 @@ describe('PATCH /agente/:id/vincular-pdv', () => {
       .execute()
 
     const pubsubSpy = vi.spyOn(publisher, 'publish')
-    const channel = createChannelName(agente!.id, 'agente:updated')
+    const channel = generateAgenteChannelName(agente!.id, 'agente:updated')
 
     const { headers } = await setupTest()
 

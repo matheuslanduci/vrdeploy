@@ -6,10 +6,10 @@ type PtyOutputPayload struct {
 }
 
 type PtyInputPayload struct {
-	SessionID string `json:"session_id"`
-	Input     []byte `json:"input"`
+	IdAgente int    `json:"idAgente"`
+	Input    string `json:"input"`
 }
 
 type PtySessionStartedPayload struct {
-	SessionID string `json:"sessionId"`
+	IdAgente int `json:"idAgente"`
 }

@@ -38,7 +38,7 @@ func NewEventSubscription(event string) []byte {
 	return data
 }
 
-func NewEventPublish(event, data string) []byte {
+func NewEventPublish(event string, data string) []byte {
 	eventPublish := EventMessage{
 		Type:  "publish",
 		Event: event,
