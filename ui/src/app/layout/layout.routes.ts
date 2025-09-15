@@ -64,5 +64,12 @@ export const layoutRoutes: Routes = [
       import('../agente/agente-consulta/agente-consulta').then(
         (m) => m.AgenteConsulta
       )
+  },
+  {
+    path: 'agentes/:id/sessao',
+    loadComponent: () =>
+      import('../agente/agente-sessao-terminal/agente-sessao-terminal').then(
+        (m) => m.AgenteSessaoTerminal
+      )
   }
 ]

@@ -10,6 +10,7 @@ import { IconDefinition } from '@ant-design/icons-angular'
 import {
   ApartmentOutline,
   CloseOutline,
+  CodeOutline,
   DeleteOutline,
   DesktopOutline,
   EditOutline,
@@ -41,7 +42,8 @@ const icons: IconDefinition[] = [
   LinuxOutline,
   CloseOutline,
   WifiOutline,
-  LinkOutline
+  LinkOutline,
+  CodeOutline
 ]
 
 export const appConfig: ApplicationConfig = {

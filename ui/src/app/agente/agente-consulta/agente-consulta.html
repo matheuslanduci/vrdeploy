@@ -122,7 +122,13 @@
               <nz-icon nzType="delete" />
             </button>
             }
-
+            @if (agente.situacao == 'aprovado' && agente.idPdv != null) {
+            <a nz-button nzType="link" [disabled]="agente.online === false"
+              [nz-tooltip]="agente.online ? 'Acessar Terminal do PDV' : 'Agente offline'"
+              [routerLink]="['/agentes', agente.id, 'sessao']">
+              <nz-icon nzType="code" />
+            </a>
+            }
           </div>
         </td>
       </tr>

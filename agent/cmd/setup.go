@@ -100,70 +100,72 @@ var setupCmd = &cobra.Command{
 			[]string{pubsub.AgenteUpdatedEvent},
 		)
 
-		ps.Connect(func(event string, data string) {
-			switch event {
-			case pubsub.AgenteUpdatedEvent:
-				{
-					var payload pubsub.AgenteUpdatedPayload
+		ps.Subscribe(pubsub.AgenteUpdatedEvent, func(data string) {
+			var payload pubsub.AgenteUpdatedPayload
 
-					err := json.Unmarshal([]byte(data), &payload)
+			err := json.Unmarshal([]byte(data), &payload)
 
-					if err != nil {
-						fmt.Println("Erro ao parsear payload:", err)
-						return
-					}
+			if err != nil {
+				fmt.Println("Erro ao parsear payload:", err)
+				return
+			}
 
-					if payload.DeletedAt != nil {
-						err := secret.Delete()
+			if payload.DeletedAt != nil {
+				err := secret.Delete()
 
-						if err != nil {
-							fmt.Println("Erro ao remover chave secreta:", err)
-							return
-						}
-
-						agentePendenteSpinner.FinalMSG = "✘  Agente removido!\n"
-						agentePendenteSpinner.Stop()
-
-						fmt.Println(
-							boxStyle.Render(
-								"O agente foi removido pelo administrador do sistema.\n" +
-									"Você pode tentar cadastrar o agente novamente usando o comando `vrdeploy setup`.",
-							),
-						)
-						return
-					}
-
-					switch payload.Situacao {
-					case "aprovado":
-						agentePendenteSpinner.Stop()
-						fmt.Println(
-							boxStyle.Render(
-								"Você já pode cancelar este processo (Ctrl+C) e usar o comando `vrdeploy start`.",
-							),
-						)
-
-						return
-					case "rejeitado":
-						err := secret.Delete()
-
-						if err != nil {
-							fmt.Println("Erro ao remover chave secreta:", err)
-							return
-						}
-
-						agentePendenteSpinner.FinalMSG = "✘  Agente rejeitado!\n"
-						agentePendenteSpinner.Stop()
-						fmt.Println(
-							boxStyle.Render(
-								"O agente foi rejeitado pelo administrador do sistema.\n" +
-									"Você pode tentar cadastrar o agente novamente usando o comando `vrdeploy setup`.",
-							),
-						)
-						return
-					}
+				if err != nil {
+					fmt.Println("Erro ao remover chave secreta:", err)
+					return
 				}
+
+				agentePendenteSpinner.FinalMSG = "✘  Agente removido!\n"
+				agentePendenteSpinner.Stop()
+
+				fmt.Println(
+					boxStyle.Render(
+						"O agente foi removido pelo administrador do sistema.\n" +
+							"Você pode tentar cadastrar o agente novamente usando o comando `vrdeploy setup`.",
+					),
+				)
+				return
+			}
+
+			switch payload.Situacao {
+			case "aprovado":
+				agentePendenteSpinner.Stop()
+				fmt.Println(
+					boxStyle.Render(
+						"Você já pode cancelar este processo (Ctrl+C) e usar o comando `vrdeploy start`.",
+					),
+				)
+
+				return
+			case "rejeitado":
+				err := secret.Delete()
+
+				if err != nil {
+					fmt.Println("Erro ao remover chave secreta:", err)
+					return
+				}
+
+				agentePendenteSpinner.FinalMSG = "✘  Agente rejeitado!\n"
+				agentePendenteSpinner.Stop()
+				fmt.Println(
+					boxStyle.Render(
+						"O agente foi rejeitado pelo administrador do sistema.\n" +
+							"Você pode tentar cadastrar o agente novamente usando o comando `vrdeploy setup`.",
+					),
+				)
+				return
 			}
 		})
+
+		err = ps.Connect()
+
+		if err != nil {
+			fmt.Println("Erro ao conectar ao serviço de pubsub:", err)
+			return
+		}
 	},
 }
 

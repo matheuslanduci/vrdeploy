@@ -24,6 +24,7 @@ export function pubsubAgenteHandler(agente: Agente) {
         )
 
         if (!validation.success) {
+          console.error(event.data)
           ws.send('Mensagem inválida')
           return
         }
@@ -33,8 +34,6 @@ export function pubsubAgenteHandler(agente: Agente) {
         switch (message.type) {
           case 'subscribe': {
             const channel = createChannelName(agente.id, message.event)
-
-            console.log(`Subscribing to channel ${channel}`)
 
             // Corrigir isso no futuro para evitar múltiplas inscrições
             subscriber.subscribe(channel).then(() => {

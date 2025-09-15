@@ -2,36 +2,57 @@ package pubsub
 
 import (
 	"agent/pkg/secret"
+	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
 
+type EventHandler func(data string)
+
 type PubSub struct {
 	SubscribedEvents []string
+	handlers         map[string][]EventHandler
+	conn             *websocket.Conn
+	mu               sync.RWMutex
+	connected        bool
 }
 
 func New(events []string) *PubSub {
 	return &PubSub{
 		SubscribedEvents: events,
+		handlers:         make(map[string][]EventHandler),
 	}
 }
 
-func (p *PubSub) Connect(
-	onMessage func(event string, data string),
-) {
+func (p *PubSub) Subscribe(event string, handler EventHandler) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.handlers[event] = append(p.handlers[event], handler)
+
+	if p.connected && p.conn != nil {
+		eventSubscription := NewEventSubscription(event)
+
+		if err := p.conn.WriteMessage(websocket.TextMessage, eventSubscription); err != nil {
+			log.Printf("Erro ao enviar mensagem de inscrição: %v", err)
+		}
+	}
+}
+
+func (p *PubSub) Connect() error {
 	dialer := websocket.Dialer{}
 
 	token, err := secret.Get()
 
 	if err != nil {
-		return
+		return err
 	}
 
 	url := "ws://localhost:3000/pubsub/agente"
-
 	requestHeader := http.Header{}
 	requestHeader.Add("X-Agente-Token", token)
 
@@ -46,9 +67,10 @@ func (p *PubSub) Connect(
 		log.Fatalf("Erro ao conectar ao WebSocket: %s", err)
 	}
 
-	defer conn.Close()
-
-	done := make(chan struct{})
+	p.mu.Lock()
+	p.conn = conn
+	p.connected = true
+	p.mu.Unlock()
 
 	for _, event := range p.SubscribedEvents {
 		eventSubscription := NewEventSubscription(event)
@@ -57,12 +79,15 @@ func (p *PubSub) Connect(
 
 		if err != nil {
 			log.Println("Erro ao enviar mensagem de inscrição:", err)
-			return
+			return err
 		}
 	}
 
+	done := make(chan struct{})
+
 	go func() {
 		defer close(done)
+		defer conn.Close()
 
 		for {
 			_, message, err := conn.ReadMessage()
@@ -75,15 +100,15 @@ func (p *PubSub) Connect(
 			parsed, err := ParseEventMessage(message)
 
 			if err != nil {
-				log.Println("Erro ao parsear mensagem:", err)
-				return
+				log.Println("Erro ao parsear mensagem:")
+				continue
 			}
 
 			if parsed.Type != "event" {
 				continue
 			}
 
-			onMessage(parsed.Event, parsed.Data)
+			p.dispatch(parsed.Event, parsed.Data)
 		}
 	}()
 
@@ -106,4 +131,42 @@ func (p *PubSub) Connect(
 	}()
 
 	<-done
+
+	p.mu.Lock()
+	p.connected = false
+	p.conn = nil
+	p.mu.Unlock()
+
+	return nil
+}
+
+func (p *PubSub) dispatch(event string, data string) {
+	p.mu.RLock()
+	handlers := p.handlers[event]
+	p.mu.RUnlock()
+
+	for _, handler := range handlers {
+		go func(h EventHandler) {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Printf("Recovered in handler for event %s: %v", event, r)
+				}
+			}()
+			h(data)
+		}(handler)
+	}
+}
+
+func (p *PubSub) Publish(event string, data string) error {
+	p.mu.RLock()
+	conn := p.conn
+	connected := p.connected
+	p.mu.RUnlock()
+
+	if !connected || conn == nil {
+		return fmt.Errorf("not connected")
+	}
+
+	publishMsg := NewEventPublish(event, data)
+	return conn.WriteMessage(websocket.TextMessage, publishMsg)
 }

@@ -3,7 +3,13 @@ package pubsub
 import "encoding/json"
 
 const (
-	AgenteUpdatedEvent = "agente:updated"
+	// Subscriptions
+	AgenteUpdatedEvent     = "agente:updated"
+	PtySessionStartedEvent = "pty:session_started"
+	PtyInputEvent          = "pty:input"
+	// Publishes
+	PtyOutputEvent       = "pty:output"
+	PtySessionEndedEvent = "pty:session_ended"
 )
 
 type EventMessage struct {
@@ -30,6 +36,22 @@ func NewEventSubscription(event string) []byte {
 	}
 
 	return data
+}
+
+func NewEventPublish(event, data string) []byte {
+	eventPublish := EventMessage{
+		Type:  "publish",
+		Event: event,
+		Data:  data,
+	}
+
+	msg, err := json.Marshal(eventPublish)
+
+	if err != nil {
+		return nil
+	}
+
+	return msg
 }
 
 func ParseEventMessage(message []byte) (*EventMessage, error) {

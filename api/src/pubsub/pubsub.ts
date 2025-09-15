@@ -9,9 +9,7 @@ export async function registerAgente(agenteId: number) {
   await redis.set(`agente:${agenteId}`, 'online', 'EX', 60)
 }
 
-export async function renewAgente(agenteId: number) {
-  await redis.expire(`agente:${agenteId}`, 60)
-}
+export const renewAgente = registerAgente
 
 export async function unregisterAgente(agenteId: number) {
   await redis.del(`agente:${agenteId}`)
