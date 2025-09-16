@@ -134,11 +134,14 @@ services:
     depends_on:
       api:
         condition: service_started
-    environment:
-      API_URL: 'http://localhost:3000/api'
-      WS_URL: 'ws://localhost:3000/pubsub'
     ports:
-      - '4200:80'
+      - '4200:4200'
+    volumes:
+      - ../ui/src:/app/ui/src:ro
+      - ../ui/angular.json:/app/ui/angular.json:ro
+      - ../ui/package.json:/app/ui/package.json:ro
+      - ../ui/tsconfig.json:/app/ui/tsconfig.json:ro
+      - ../ui/tsconfig.app.json:/app/ui/tsconfig.app.json:ro
     networks:
       - vrdeploy-network
 

@@ -16,7 +16,7 @@ echo "API_URL: $API_URL"
 echo "WS_URL: $WS_URL"
 
 # Encontrar todos os arquivos JavaScript buildados
-JS_FILES=$(find /usr/share/nginx/html -name "*.js" -type f)
+JS_FILES=$(find /app -name "*.js" -type f)
 
 if [ -z "$JS_FILES" ]; then
     echo "⚠️ Nenhum arquivo JavaScript encontrado. Usando configuração padrão."
@@ -36,10 +36,10 @@ else
 fi
 
 # Criar pasta assets se não existir
-mkdir -p /usr/share/nginx/html/assets
+mkdir -p /app/assets
 
 # Criar arquivo de configuração dinâmica (método alternativo)
-cat > /usr/share/nginx/html/assets/config.js << EOF
+cat > /app/assets/config.js << EOF
 window.__env = window.__env || {};
 window.__env.apiURL = '$API_URL';
 window.__env.wsURL = '$WS_URL';
