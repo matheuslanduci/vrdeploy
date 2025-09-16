@@ -11,6 +11,7 @@ que serão implantadas nos PDVs. Funcionalidades principais:
 Infelizmente o tempo disponível não permitiu a implementação de algumas
 funcionalidades que seriam interessantes, como:
 
+- Auxiliar de criação de manifesto (o JSON que define os arquivos e dependências)
 - Rollback de versões
 - Interface FTP para upload de arquivos de forma mais simples
 - Testes automatizados no frontend e agente

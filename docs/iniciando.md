@@ -79,8 +79,7 @@ Para implantar uma nova versão do software no PDV, siga os passos abaixo:
             "expr": "hello world" 
           },
           "dependencies": [
-            // você pode listar outros arquivos que devem ser iniciados antes
-            // no mesmo formato            
+            // você pode listar de forma recursiva, inclusive usar scripts                  
           ]
         }
      ]
