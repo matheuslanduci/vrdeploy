@@ -18,7 +18,7 @@ Explicação dos componentes:
 - API
 	- É a "ponte" que conecta tudo.
 	- O Agente do PDV e a Plataforma se comunicam com a API.
-	- A API manda atualizações para o PDV e recebe comandos de gerenciamento da plataforma.
+	- A API manda atualizações para o PDV (via WebSocket) e recebe comandos de gerenciamento da plataforma.
 
 - Bancos de dados
 	- Postgres → Armazena os dados (informações do sistema).

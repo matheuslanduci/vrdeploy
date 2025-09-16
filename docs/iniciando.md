@@ -27,7 +27,8 @@ usuário `root_user@vrsoft.com.br` e senha `root_password`.
 ## Agente
 
 Não é recomendado rodar o agente no Docker, pois ele precisa de acesso ao
-sistema de arquivos. Para rodar o agente, você pode compilar o código:
+sistema de arquivos. Para rodar o agente, você pode compilar o código ou
+baixar um [binário pré-compilado na seção de releases do GitHub](https://github.com/matheuslanduci/vrdeploy/releases/tag/1.0.0).
 
 ```bash
 cd ../agent
@@ -53,18 +54,36 @@ registro, você pode iniciar o agente normalmente com:
 Para vincular o agente com o PDV, siga os passos abaixo:
 
 1. Acesse a plataforma web em `http://localhost:4200/agentes`
+
+![alt text](../.github/assets/agentes.png)
+
 2. Clique em "Vincular" no agente que você deseja vincular.
-3. Selecione o PDV na lista e clique em "Vincular".
-4. O agente agora está vinculado ao PDV e pronto para uso.
-5. Você pode utilizar o terminal através da plataforma para acessar o PDV
-   remotamente.
+
+![alt text](../.github/assets/vincular-agente.png)
+
+3. O agente agora está vinculado ao PDV e pronto para uso.
+
+![alt text](../.github/assets/agente-vinculado.png)
+
+4. Você pode utilizar o terminal através da plataforma para acessar o PDV
+   remotamente (após utilizar os comandos `./vrdeploy-agent setup`
+   e `./vrdeploy-agent start` no PDV).
+
+![alt text](../.github/assets/agente-terminal.png)
+
 
 ## Implantação de versão
 
 Para implantar uma nova versão do software no PDV, siga os passos abaixo:
 
 1. Acesse a plataforma web em `http://localhost:4200/versoes`
+
+![alt text](../.github/assets/versoes.png)
+
 2. Clique em "Criar Versão" e preencha os detalhes da nova versão.
+
+![alt text](../.github/assets/criar-versao.png)
+
 3. Preencha o campo "Manifesto". Ele segue o formato JSON, por exemplo:
    ```json
    {
@@ -85,12 +104,29 @@ Para implantar uma nova versão do software no PDV, siga os passos abaixo:
      ]
    }
    ```
+
+![alt text](../.github/assets/manifesto.png)
+
 4. Salve a versão.
+
+![alt text](../.github/assets/versao-criada.png)
+
 5. Faça o upload do arquivo .zip contendo os arquivos da nova versão
   (só é possível fazer upload de arquivos depois de criar a versão).
+
+  ![alt text](../.github/assets/versao-zip.png)
+
 6. Volte para a tela de versões e clique em "Implantar" na versão que você
    acabou de criar.
-7. Selecione os PDV onde você deseja implantar a nova versão e clique em 
+
+   ![alt text](../.github/assets/implantar-versao.png)
+
+7. Selecione os PDV onde você deseja implantar a nova versão e clique em
    "Implantar".
+
+   ![alt text](../.github/assets/deploy.png)
+
 8. A implantação será iniciada e você poderá acompanhar o progresso na
    plataforma web.
+
+   ![alt text](../.github/assets/deploys.png)

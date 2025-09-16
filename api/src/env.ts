@@ -10,6 +10,7 @@ const envSchema = z.object({
   S3_SECRET_KEY: z.string(),
   S3_ENDPOINT: z.string(),
   S3_BUCKET: z.string(),
+  S3_REGION: z.string(),
 
   REDIS_URL: z.string().optional()
 })
