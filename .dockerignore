@@ -1,0 +1,54 @@
+# Node modules de todos os projetos
+**/node_modules
+**/.next
+**/dist
+**/build
+
+# Logs
+**/*.log
+**/logs
+
+# Arquivos de ambiente
+**/.env
+**/.env.local
+**/.env.production
+**/.env.test
+
+# Cache e arquivos temporários
+**/.cache
+**/.angular
+**/*.tsbuildinfo
+
+# IDE files
+.vscode/
+.idea/
+**/*.swp
+**/*.swo
+**/*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Coverage
+**/coverage
+
+# Outros arquivos desnecessários para Docker
+README.md
+docs/
+**/*.md
+.prettierrc
+
+# Arquivos específicos do projeto
+agent/
+docker/
+.vscode/

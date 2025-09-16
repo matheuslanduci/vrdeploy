@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vrdeploy
+      POSTGRES_USER: vrdeploy
+      POSTGRES_PASSWORD: vrdeploy
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vrdeploy -d vrdeploy']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vrdeploy-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - vrdeploy-network
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_ACCESS_KEY: 15fpbK8MQhem92Bgjzik
+      MINIO_SECRET_KEY: 76qqNaOwRqsHbqz3ueWlwZumNRQfIj9Y12phxF5m
+    volumes:
+      - minio_data:/data
+    ports:
+      - '9000:9000' # API
+      - '9001:9001' # Console
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - vrdeploy-network
+
+  # MinIO Client para setup inicial
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Aguardando MinIO...' &&
+      sleep 10 &&
+      /usr/bin/mc alias set minio http://minio:9000 minioadmin minioadmin123 &&
+      /usr/bin/mc mb --ignore-existing minio/vrdeploy &&
+      /usr/bin/mc admin user add minio 15fpbK8MQhem92Bgjzik 76qqNaOwRqsHbqz3ueWlwZumNRQfIj9Y12phxF5m &&
+      /usr/bin/mc admin policy attach minio readwrite --user 15fpbK8MQhem92Bgjzik &&
+      echo 'MinIO setup concluído'
+      "
+    networks:
+      - vrdeploy-network
+
+  # API Application
+  api:
+    build:
+      context: ..
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: 'postgresql://vrdeploy:vrdeploy@postgres:5432/vrdeploy'
+      BETTER_AUTH_SECRET: 'BZ9qIU5KWVFRI0YHkca5CxcdJcoWtuVA'
+      BETTER_AUTH_URL: 'http://localhost:3000'
+      S3_ACCESS_KEY: '15fpbK8MQhem92Bgjzik'
+      S3_SECRET_KEY: '76qqNaOwRqsHbqz3ueWlwZumNRQfIj9Y12phxF5m'
+      S3_ENDPOINT: 'http://minio:9000'
+      S3_BUCKET: 'vrdeploy'
+      REDIS_URL: 'redis://redis:6379'
+      NODE_ENV: 'development'
+    ports:
+      - '3000:3000'
+    volumes:
+      - ../api/src:/app/src:ro
+      - ../api/package.json:/app/package.json:ro
+      - ../api/tsconfig.json:/app/tsconfig.json:ro
+      - ../api/.env.docker:/app/.env.docker:ro
+    networks:
+      - vrdeploy-network
+    command: >
+      sh -c "
+      echo 'Aguardando dependências...' &&
+      sleep 15 &&
+      echo 'Executando migrações...' &&
+      npx tsx ./scripts/migrate.ts &&
+      echo 'Criando usuário root...' &&
+      npx tsx ./scripts/create-root-user.ts &&
+      echo 'Iniciando aplicação...' &&
+      npx tsx --watch src/main.ts
+      "
+
+  # Angular UI Application
+  ui:
+    build:
+      context: ..
+      dockerfile: ui/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      API_URL: 'http://localhost:3000/api'
+      WS_URL: 'ws://localhost:3000/pubsub'
+    ports:
+      - '4200:80'
+    networks:
+      - vrdeploy-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  vrdeploy-network:
+    driver: bridge

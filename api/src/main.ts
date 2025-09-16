@@ -47,6 +47,8 @@ export const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({
   app
 })
 
+app.get('/health', (c) => c.json({ status: 'ok' }))
+
 app.get('/pubsub/agente', requireAgenteAuth(), async (c) => {
   const agente = c.get('agente')
 

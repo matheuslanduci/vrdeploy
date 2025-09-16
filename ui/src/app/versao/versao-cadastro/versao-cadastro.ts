@@ -8,7 +8,6 @@ import { NzGridModule } from 'ng-zorro-antd/grid'
 import { NzIconModule } from 'ng-zorro-antd/icon'
 import { NzInputModule } from 'ng-zorro-antd/input'
 import { NzNotificationService } from 'ng-zorro-antd/notification'
-import { NzPopconfirmDirective } from 'ng-zorro-antd/popconfirm'
 import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload'
 import { environment } from '../../../environments/environment'
 import { Versao } from '../versao-consulta/versao-consulta'
@@ -23,8 +22,7 @@ import { Versao } from '../versao-consulta/versao-consulta'
     NzInputModule,
     NzGridModule,
     NzCardModule,
-    NzUploadModule,
-    NzPopconfirmDirective
+    NzUploadModule
   ],
   templateUrl: './versao-cadastro.html',
   styleUrl: './versao-cadastro.css'

@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router'
 
 export const layoutRoutes: Routes = [
-  {
-    path: '',
-    loadComponent: () => import('../home/home').then((m) => m.Home)
-  },
+  // {
+  //   path: '',
+  //   loadComponent: () => import('../home/home').then((m) => m.Home)
+  // },
   {
     path: 'redes',
     loadComponent: () =>
@@ -99,5 +99,9 @@ export const layoutRoutes: Routes = [
       import('../implantacao/implantacao-consulta/implantacao-consulta').then(
         (m) => m.ImplantacaoConsulta
       )
+  },
+  {
+    path: '**',
+    redirectTo: 'redes'
   }
 ]
